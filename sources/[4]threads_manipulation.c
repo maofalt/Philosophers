@@ -1,34 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   [0]main.c                                          :+:      :+:    :+:   */
+/*   [4]threads_manipulation.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/07 23:17:30 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/07 22:21:08 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+void	ft_create_threads(t_arguments args, t_list_item *list)
 {
-	t_arguments	*args;
-	t_list_item	*list;
+	pthread_t	*philosopher;
+	int			i;
 
-	if (!ft_valid_arguments(argc, argv))
+	(void)list;
+	philosopher = malloc(sizeof(pthread_t) * args.number_of_philosophers);
+	if (!philosopher)
+		return ;
+	i = 0;
+	while (i < args.number_of_philosophers)
 	{
-		ft_printf("Invalid arguments\n");
-		return (0);
+		//pthread_create(&philosopher[i], NULL, philosopher_behavior, get_philosopher(list, i + 1));
+		i++;
 	}
-	args = ft_parse_arguments(argc, argv);
-	if (!args)
-		return (0);
-	list = ft_create_list(args);
-	if (!list)
-		return (free(args), 0);
-	ft_print_list(list);
-	ft_create_treads(list);
-	free_list(list);
 }

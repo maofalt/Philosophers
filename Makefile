@@ -6,17 +6,17 @@
 #    By: motero <motero@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/10 18:38:23 by motero            #+#    #+#              #
-#    Updated: 2022/11/28 22:18:32 by motero           ###   ########.fr        #
+#    Updated: 2022/12/07 22:19:17 by motero           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = pipex
+NAME = philosophers
 
 #=============================================================================#
 #                                 HEADERS                                     #
 #=============================================================================#
 
-HDR_NAME = Pipex.h#here other headers too
+HDR_NAME = philo.h#here other headers too
 HDR_DIR = includes/
 HDRS = $(addprefix $(HDR_DIR), $(HDR_NAME))
 HDR_INC = -I includes -I libft/includes
@@ -46,10 +46,11 @@ MINILIBX = $(MINILIBX_HDIR)libmlx.a
 
 SRCS_DIR_PS = sources/
 SRCS_NAME_PS = [0]main.c \
-			[1]pipex_utils.c \
-			[2]error_mgt.c \
-			[3]here_doc.c \
-			[4]execution.c 
+			[1]valid_arguments.c \
+			[2]parse_arguments.c \
+			[3]list_manipulation.c \
+			[4]threads_manipulation.c \
+			[5]philosophers_behavior.c 
 
 SRCS_PS = $(addprefix $(SRCS_DIR_PS), $(SRCS_NAME_PS))
 
