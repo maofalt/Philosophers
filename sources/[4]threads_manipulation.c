@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/08 23:02:09 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/08 23:45:40 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,10 @@ void	ft_create_threads(t_list_item *list)
 {
 	t_list_item		*current;
 	t_thread_info	*thread_info;
-	pthread_mutex_t	display_mutex;
+	pthread_mutex_t	*display_mutex;
 
-	pthread_mutex_init(&display_mutex, NULL);
+	display_mutex = malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(display_mutex, NULL);
 	current = list;
 	while (current)
 	{

@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/08 11:36:43 by motero            #+#    #+#             */
-/*   Updated: 2022/12/08 23:04:57 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/08 23:44:52 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ typedef struct s_list_item {
 
 typedef struct s_thread_info {
 	t_list_item		*item;
-	pthread_mutex_t	display_mutex;
+	pthread_mutex_t	*display_mutex;
 }	t_thread_info;
 /*############################################################################*/
 /*                           VALID_ARGUMENTS							      */

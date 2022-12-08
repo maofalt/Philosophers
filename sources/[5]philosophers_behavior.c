@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/08 23:05:42 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/08 23:48:24 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,23 +40,26 @@ void	*philosopher_thread(void *arg)
 			while (time < time_loop)
 			{
 				ft_philo_starved(start, info);
-				usleep(500);
-				time += 5;
+				usleep(1000);
+				time += 1;
 			}
 			philosopher->state += 1;
 		}
-		if (ft_try_eat(start, info))
+		if (philosopher->state == HUNGRY)
 		{
+			ft_try_eat(start, info);
 			time_loop = philosopher->args.time_to_eat;
 			ft_display_status(start, info);
 			time = 0;
 			while (time < time_loop)
 			{
 				ft_philo_starved(start, info);
-				usleep(5000);
-				time += 5;
+				usleep(1000);
+				time += 1;
 			}
 			ft_put_down_forks(philosopher);
+			ft_philo_starved(start, info);
+			philosopher->state = SLEEPING;
 		}
 	}
 }
@@ -69,12 +72,12 @@ void	ft_display_status(struct timeval start, t_thread_info *info)
 	int				timestamp;
 	int				i;
 
+	pthread_mutex_lock(info->display_mutex);
 	philosopher = info->item;
 	gettimeofday(&current, NULL);
 	timestamp = (current.tv_sec - start.tv_sec) * 1000
 		+ (current.tv_usec - start.tv_usec) / 1000;
 	i = philosopher->number;
-	pthread_mutex_lock(&info->display_mutex);
 	if (philosopher->state == THINKING)
 		ft_printf("%d ms Philosopher %d is thinking\n", timestamp, i);
 	else if (philosopher->state == FORKING)
@@ -87,7 +90,7 @@ void	ft_display_status(struct timeval start, t_thread_info *info)
 		ft_printf("%d ms Philosopher %d died\n", timestamp, i);
 	else
 		ft_printf("ERROR: Philosopher %d has an invalid state\n", i);
-	pthread_mutex_unlock(&info->display_mutex);
+	pthread_mutex_unlock(info->display_mutex);
 }
 
 // Function to try to pick up the forks on either side of a philosopher
