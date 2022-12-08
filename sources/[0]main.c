@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/07 23:17:30 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/08 22:04:47 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ int	main(int argc, char **argv)
 	list = ft_create_list(args);
 	if (!list)
 		return (free(args), 0);
-	ft_print_list(list);
-	ft_create_treads(list);
+	//ft_print_list(list);
+	ft_create_threads(list);
 	free_list(list);
+	free(args);
 }

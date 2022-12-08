@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/07 22:13:56 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/08 21:29:19 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ t_arguments	*ft_parse_arguments(int argc, char **argv)
 {
 	t_arguments	*args;
 
-	args = malloc(sizeof(args));
+	args = malloc(sizeof(t_arguments));
 	if (!args)
 		return (NULL);
 	ft_memset(args, 0, sizeof(t_arguments));
@@ -29,3 +29,4 @@ t_arguments	*ft_parse_arguments(int argc, char **argv)
 		args->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
 	return (args);
 }
+	

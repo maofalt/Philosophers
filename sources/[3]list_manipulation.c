@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/07 22:55:21 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/08 22:01:45 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,16 @@ t_list_item	*ft_create_list(t_arguments *args)
 	t_list_item	*philosopher;
 	int			i;
 
-	first = create_item(PHILOSOPHER, THINKING, 1);
-	fork = create_item(FORK, NULL, 1);
+	first = create_item(PHILOSOPHER, HUNGRY, *args, 1);
+	fork = create_item(FORK, 0, *args, 1);
 	link_items(first, fork);
 	prev = fork;
 	i = 2;
 	while (i <= args->number_of_philosophers)
 	{
-		philosopher = create_item(PHILOSOPHER, THINKING, i);
+		philosopher = create_item(PHILOSOPHER, HUNGRY, *args, i);
 		link_items(prev, philosopher);
-		fork = create_item(FORK, NULL, i);
+		fork = create_item(FORK, 0, *args, i);
 		link_items(philosopher, fork);
 		prev = fork;
 		i++;
@@ -40,17 +40,25 @@ t_list_item	*ft_create_list(t_arguments *args)
 }
 
 // A helper function that creates a philosopher  or a fork with a given number
-t_list_item	*create_item(t_item_type type, t_state state, int number)
+t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 {
 	t_list_item	*item;
 
 	item = malloc(sizeof(t_list_item));
 	if (!item)
 		return (NULL);
+	item->args = a;
 	item->type = type;
-	item->number = number;
+	item->number = nb;
 	if (type == PHILOSOPHER)
+	{
+		item->thread = malloc(sizeof(pthread_t));
+		item->state = THINKING;
+	}
+	if (type == PHILOSOPHER && nb % 2 == 0)
 		item->state = state;
+	else if (type == FORK)
+		pthread_mutex_init(&item->mutex, NULL);
 	item->prev = NULL;
 	item->next = NULL;
 	return (item);
@@ -91,14 +99,25 @@ void	ft_print_list(t_list_item *first)
 void	free_list(t_list_item *first)
 {
 	t_list_item	*item;
+	t_list_item	*prev;
+	int			i;
+	int			max;	
 
 	item = first;
 	first = first->next;
-	free(item);
-	while (first != NULL)
+	i = 0;
+	max = item->args.number_of_philosophers;
+	while (i++ < max)
 	{
-		item = first;
-		first = first->next;
-		free(item);
+		if (item->type == PHILOSOPHER)
+		{
+			pthread_join(*item->thread, NULL);
+			free(item->thread);
+		}
+		else
+			pthread_mutex_destroy(&item->mutex);
+		prev = item;
+		item = item->next;
+		free(prev);
 	}
 }
