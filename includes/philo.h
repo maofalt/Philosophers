@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/08 11:36:43 by motero            #+#    #+#             */
-/*   Updated: 2022/12/08 22:19:29 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/08 23:04:57 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,21 +66,10 @@ typedef struct s_list_item {
 	pthread_t				*thread;
 }	t_list_item;
 
-// Struct to store information about a philosopher
-typedef struct s_philosopher {
-	int						nb;
-	int						eat_count;
-	int						think_time;
-	int						eat_time;
-	int						sleep_time;
-	int						time_to_die;
-	int						time_to_eat;
-	int						time_to_sleep;
-	int						num_times_to_eat;
-	pthread_mutex_t			*left_fork;
-	pthread_mutex_t			*right_fork;
-}	t_philosopher;
-
+typedef struct s_thread_info {
+	t_list_item		*item;
+	pthread_mutex_t	display_mutex;
+}	t_thread_info;
 /*############################################################################*/
 /*                           VALID_ARGUMENTS							      */
 /*############################################################################*/
@@ -115,9 +104,9 @@ void			ft_create_threads(t_list_item *list);
 /*############################################################################*/
 
 void			*philosopher_thread(void *arg);
-void			ft_display_status(struct timeval start, t_list_item *philosopher);
-int				ft_try_eat(struct timeval start, t_list_item *philosopher);
+void			ft_display_status(struct timeval start, t_thread_info *info);
+int				ft_try_eat(struct timeval start, t_thread_info *info);
 void			ft_put_down_forks(t_list_item *philosopher);
-void			ft_philo_starved(struct timeval start, t_list_item *philosopher);
+void			ft_philo_starved(struct timeval start, t_thread_info *info);
 
 #endif
