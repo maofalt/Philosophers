@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/09 16:58:51 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/09 21:44:31 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,28 +26,27 @@ void	*philosopher_thread(void *arg)
 	args = (t_arguments)philosopher->args;
 	while (!ft_stop_signal(info))
 	{
-		ft_philo_starved(info->timestamps->start, info);
 		if (philosopher->state == SLEEPING)
-			time_loop = philosopher->args.time_to_sleep;
+			time_loop = philosopher->args.time_to_sleep * 10;
 		else if (philosopher->state == THINKING)
-			time_loop = philosopher->args.time_to_die;
+			time_loop = philosopher->args.time_to_die * 10;
 		if (philosopher->state == SLEEPING)
 		{
 			ft_display_status(info->timestamps->start, info);
 			time = 0;
 			while (time < time_loop && !ft_stop_signal(info))
 			{
-				usleep(1000);
+				usleep(500);
 				time += 1;
 			}
 			philosopher->state += 1;
 		}
-		if (philosopher->state == THINKING)
+		if (philosopher->state == THINKING && !ft_stop_signal(info))
 		{
 			ft_display_status(info->timestamps->start, info);
 			philosopher->state += 1;
 		}
-		if (philosopher->state == HUNGRY)
+		if (philosopher->state == HUNGRY &&!ft_stop_signal(info))
 		{
 			ft_try_eat(info->timestamps->start, info);
 			time_loop = philosopher->args.time_to_eat;
@@ -55,7 +54,7 @@ void	*philosopher_thread(void *arg)
 			time = 0;
 			while (time < time_loop && !ft_stop_signal(info))
 			{
-				usleep(1000);
+				usleep(500);
 				time += 1;
 			}
 			ft_put_down_forks(info);
@@ -118,6 +117,8 @@ int	ft_try_eat(struct timeval start, t_thread_info *info)
 	{
 		pthread_mutex_lock(&left_fork->mutex);
 		ft_display_status(start, info);
+		while (philosopher->args.number_of_philosophers == 1 && !ft_stop_signal(info))
+			usleep(philosopher->args.time_to_eat * 10);
 		pthread_mutex_lock(&right_fork->mutex);
 		ft_display_status(start, info);
 	}
@@ -159,11 +160,17 @@ int	ft_philo_starved(struct timeval start, t_thread_info *info)
 	info->timestamps->delta_time = (current.tv_sec - start.tv_sec) * 1000
 		+ (current.tv_usec - start.tv_usec) / 1000;
 	elapsed_time = info->timestamps->delta_time;
+	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->last_meal.tv_sec) * 1000
+		+ (current.tv_usec - info->timestamps->last_meal.tv_usec) / 1000;
 	last_meal = info->timestamps->delta_last_meal;
 	if (last_meal >= philosopher->args.time_to_die)
 	{
 		philosopher->state = DEAD;
-		ft_display_status(start, info);
+		pthread_mutex_lock(info->death_mutex);
+			*info->someone_died += 1;
+		if (*info->someone_died == 1)
+			ft_display_status(start, info);
+		pthread_mutex_unlock(info->death_mutex);
 		return (1);
 	}
 	return (0);

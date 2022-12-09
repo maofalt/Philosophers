@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/08 11:36:43 by motero            #+#    #+#             */
-/*   Updated: 2022/12/09 15:29:31 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/09 22:11:59 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct s_thread_info {
 	int				*nbr_philo_full;
 	int				*someone_died;		
 	pthread_mutex_t	*display_mutex;
+	pthread_mutex_t	*death_mutex;
 }	t_thread_info;
 
 /*############################################################################*/
@@ -124,4 +125,8 @@ void			ft_put_down_forks(t_thread_info *info);
 int				ft_philo_starved(struct timeval start, t_thread_info *info);
 int				ft_stop_signal(t_thread_info *info);
 
+/*############################################################################*/
+/*                           MONITOR	BEHAVIOR							  */
+/*############################################################################*/
+void			*monitor_thread(void *arg);
 #endif

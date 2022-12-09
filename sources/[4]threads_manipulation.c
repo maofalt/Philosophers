@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/09 15:39:46 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/09 22:10:21 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,17 @@ void	ft_create_threads(t_list_item *list)
 	t_list_item		*current;
 	t_thread_info	*thread_info;
 	pthread_mutex_t	*display_mutex;
+	pthread_mutex_t	*death_mutex;
 	struct timeval	start;
 	int				*nbr_philo_full;
 	int				*someone_died;
+	pthread_t		monitor_thread;
 
 	display_mutex = malloc(sizeof(pthread_mutex_t));
 	if (!display_mutex)
+		return ;
+	death_mutex = malloc(sizeof(pthread_mutex_t));
+	if (!death_mutex)
 		return ;
 	pthread_mutex_init(display_mutex, NULL);
 	current = list;
@@ -37,6 +42,7 @@ void	ft_create_threads(t_list_item *list)
 		ft_memset(thread_info, 0, sizeof(t_thread_info));
 		thread_info->item = current;
 		thread_info->display_mutex = display_mutex;
+		thread_info->death_mutex = death_mutex;
 		thread_info->timestamps = malloc(sizeof(t_timestamps));
 		if (!thread_info->timestamps)
 			return ;
@@ -55,4 +61,5 @@ void	ft_create_threads(t_list_item *list)
 		if (current == list)
 			break ;
 	}
+		pthread_create(&monitor_thread, NULL, monitor_philosophers, thread_info_list);
 }
