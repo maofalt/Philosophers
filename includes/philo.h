@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/08 11:36:43 by motero            #+#    #+#             */
-/*   Updated: 2022/12/08 23:44:52 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/09 15:29:31 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,15 @@
 /*############################################################################*/
 /*                              STRUCTURES                                    */
 /*############################################################################*/
+
+//A structure to store the time
+typedef struct s_timestamps {
+	struct timeval	start;
+	struct timeval	current;
+	struct timeval	last_meal;
+	int				delta_time;
+	int				delta_last_meal;
+}	t_timestamps;
 
 // A structure that contains the parsed arguments
 typedef struct s_arguments {
@@ -68,8 +77,13 @@ typedef struct s_list_item {
 
 typedef struct s_thread_info {
 	t_list_item		*item;
+	t_timestamps	*timestamps;
+	int				times_eaten;
+	int				*nbr_philo_full;
+	int				*someone_died;		
 	pthread_mutex_t	*display_mutex;
 }	t_thread_info;
+
 /*############################################################################*/
 /*                           VALID_ARGUMENTS							      */
 /*############################################################################*/
@@ -106,7 +120,8 @@ void			ft_create_threads(t_list_item *list);
 void			*philosopher_thread(void *arg);
 void			ft_display_status(struct timeval start, t_thread_info *info);
 int				ft_try_eat(struct timeval start, t_thread_info *info);
-void			ft_put_down_forks(t_list_item *philosopher);
-void			ft_philo_starved(struct timeval start, t_thread_info *info);
+void			ft_put_down_forks(t_thread_info *info);
+int				ft_philo_starved(struct timeval start, t_thread_info *info);
+int				ft_stop_signal(t_thread_info *info);
 
 #endif

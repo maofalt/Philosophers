@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/08 23:45:40 by motero           ###   ########.fr       */
+/*   Updated: 2022/12/09 15:39:46 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,36 @@ void	ft_create_threads(t_list_item *list)
 	t_list_item		*current;
 	t_thread_info	*thread_info;
 	pthread_mutex_t	*display_mutex;
+	struct timeval	start;
+	int				*nbr_philo_full;
+	int				*someone_died;
 
 	display_mutex = malloc(sizeof(pthread_mutex_t));
+	if (!display_mutex)
+		return ;
 	pthread_mutex_init(display_mutex, NULL);
 	current = list;
+	gettimeofday(&start, NULL);
+	nbr_philo_full = malloc(sizeof(int));
+	someone_died = malloc(sizeof(int));
 	while (current)
 	{
 		thread_info = malloc(sizeof(t_thread_info));
 		if (!thread_info)
 			return ;
+		ft_memset(thread_info, 0, sizeof(t_thread_info));
 		thread_info->item = current;
 		thread_info->display_mutex = display_mutex;
+		thread_info->timestamps = malloc(sizeof(t_timestamps));
+		if (!thread_info->timestamps)
+			return ;
+		ft_memset(thread_info->timestamps, 0, sizeof(t_timestamps));
+		thread_info->timestamps->start = start;
+		thread_info->timestamps->last_meal = start;
+		*nbr_philo_full = 0;
+		*someone_died = 0;
+		thread_info->nbr_philo_full = nbr_philo_full;
+		thread_info->someone_died = someone_died;
 		if (current->type == PHILOSOPHER)
 		{
 			pthread_create(current->thread, NULL, philosopher_thread, thread_info);
