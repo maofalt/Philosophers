@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2023/01/16 18:39:08 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 18:45:38 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ void	*monitor_philosophers(void *arg)
 				ft_put_down_forks(info);
 				stop_philosophers(info);
 			}
-			// if (ft_philo_starved(info->timestamps->start, info))
-			// {
-			// 	ft_put_down_forks(info);
-			// 	stop_philosophers(info);
-			// }
+			if (ft_philo_starved(info->timestamps->start, info))
+			{
+				ft_put_down_forks(info);
+				stop_philosophers(info);
+			}
 		}
 		node = node->next;
 	}

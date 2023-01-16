@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2023/01/16 18:38:05 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 18:59:41 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,9 @@ int	ft_try_eat(struct timeval start, t_thread_info *info)
 	gettimeofday(&current, NULL);
 	info->timestamps->last_meal = current;
 	return (1);
+	pthread_mutex_init(&philosopher->mutex, );
 }
+
 
 // Function to put down the forks after a philosopher is done eating
 void	ft_put_down_forks(t_thread_info *info)
