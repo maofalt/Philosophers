@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2023/01/16 18:45:38 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 23:18:01 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,12 @@ void	*monitor_philosophers(void *arg)
 
 	info = (t_thread_info *)arg;
 	node = info->item;
+	printf("type %d\n", node->type);
 	while (node)
 	{
 		if (node->type == PHILOSOPHER)
 		{
+			printf("nbr loop\n");
 			args = node->args;
 			if (args.number_of_times_each_philosopher_must_eat > 0)
 			{
@@ -49,7 +51,8 @@ void	*monitor_philosophers(void *arg)
 				stop_philosophers(info);
 			}
 		}
-		node = node->next;
+		if (node->args.number_of_philosophers > 1)
+			node = node->next;
 	}
 	pthread_exit(0);
 }

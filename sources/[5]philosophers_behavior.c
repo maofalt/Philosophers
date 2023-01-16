@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2023/01/16 18:59:41 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 22:26:30 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,11 @@ void	*philosopher_thread(void *arg)
 		}
 		if (philosopher->state == HUNGRY)
 		{
-			ft_try_eat(info->timestamps->start, info);
+			if (!ft_try_eat(info->timestamps->start, info))
+			{
+				philosopher->state -= 1;
+				continue ;
+			}
 			ft_display_status(info->timestamps->start, info);
 			time_loop = philosopher->args.time_to_eat;
 			time = 0;
@@ -62,7 +66,7 @@ void	*philosopher_thread(void *arg)
 		if (philosopher->state == END)
 			pthread_exit(0);
 	}
-	return (NULL);
+	pthread_exit(0);
 }
 
 // void	*philosopher_thread(void *arg)
@@ -156,28 +160,50 @@ int	ft_try_eat(struct timeval start, t_thread_info *info)
 	struct timeval	current;
 
 	philosopher = info->item;
-	left_fork = philosopher->prev;
-	right_fork = philosopher->next;
-	philosopher->state = FORKING;
+	left_fork = NULL;
+	right_fork = NULL;
+	if (philosopher->prev != NULL)
+		left_fork = philosopher->prev;
+	if (philosopher->next != NULL)
+		right_fork = philosopher->next;
 	if (philosopher->number % 2 == 0)
 	{
-		pthread_mutex_lock(&right_fork->mutex);
-		ft_display_status(start, info);
-		pthread_mutex_lock(&left_fork->mutex);
-		ft_display_status(start, info);
+		philosopher->state = FORKING;
+		if (right_fork)
+		{
+			pthread_mutex_lock(&right_fork->mutex);
+			ft_display_status(start, info);
+		}
+		if (left_fork)
+		{
+			pthread_mutex_lock(&left_fork->mutex);
+			ft_display_status(start, info);
+		}
+		philosopher->state = EATING;
 	}
 	else
 	{
-		pthread_mutex_lock(&left_fork->mutex);
-		ft_display_status(start, info);
-		pthread_mutex_lock(&right_fork->mutex);
-		ft_display_status(start, info);
+		philosopher->state = FORKING;
+		if (left_fork)
+		{
+			printf("Philosopher is trying to pick up left fork \n");
+			pthread_mutex_lock(&left_fork->mutex);
+			ft_display_status(start, info);
+		}
+		if (right_fork)
+		{
+			printf("Philosopher is trying to pick up right fork \n");
+			pthread_mutex_lock(&right_fork->mutex);
+			ft_display_status(start, info);
+		}
+		if (left_fork && right_fork)
+			philosopher->state = EATING;
 	}
-	philosopher->state = EATING;
+	if (philosopher->state != EATING)
+		return (0);
 	gettimeofday(&current, NULL);
 	info->timestamps->last_meal = current;
 	return (1);
-	pthread_mutex_init(&philosopher->mutex, );
 }
 
 

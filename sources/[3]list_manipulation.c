@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2023/01/16 18:33:37 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 23:22:58 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ t_list_item	*ft_create_list(t_arguments *args)
 	fork = create_item(FORK, 0, *args, 1);
 	link_items(first, fork);
 	prev = fork;
+	printf("nbr of philo: %d\n", args->number_of_philosophers);
+	if (args->number_of_philosophers == 1)
+		return (first);
 	i = 2;
 	while (i <= args->number_of_philosophers)
 	{
@@ -42,7 +45,7 @@ t_list_item	*ft_create_list(t_arguments *args)
 // A helper function that creates a philosopher  or a fork with a given number
 t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 {
-	t_list_item	*item;
+	t_list_item			*item;
 
 	item = malloc(sizeof(t_list_item));
 	if (!item)
@@ -69,7 +72,7 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 void	link_items(t_list_item *prev, t_list_item *next)
 {
 	prev->next = next;
-	next->prev = prev;
+	next->make = prev;
 }
 
 // A function that prints the linked list of philosophers and forks

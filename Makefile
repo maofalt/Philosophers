@@ -6,7 +6,7 @@
 #    By: motero <motero@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/10 18:38:23 by motero            #+#    #+#              #
-#    Updated: 2023/01/16 17:55:55 by motero           ###   ########.fr        #
+#    Updated: 2023/01/16 21:53:02 by motero           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -82,7 +82,7 @@ OBJS = $(addprefix $(OBJS_PATH), $(OBJS_NAME))
 #=============================================================================#
 
 CC = cc
-CFLAGS = -MMD -Wall -Wextra -Werror -g 
+CFLAGS = -MMD -Wall -Wextra -Werror -g  -pthread
 LIBA = ar rc
 LIBS = ranlib
 
