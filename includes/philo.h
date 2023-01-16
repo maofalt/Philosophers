@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/08 11:36:43 by motero            #+#    #+#             */
-/*   Updated: 2022/12/09 22:11:59 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/03 17:32:45 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ typedef struct s_thread_info {
 	t_timestamps	*timestamps;
 	int				times_eaten;
 	int				*nbr_philo_full;
-	int				*someone_died;		
+	int				*someone_died;
 	pthread_mutex_t	*display_mutex;
 	pthread_mutex_t	*death_mutex;
 }	t_thread_info;
