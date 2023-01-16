@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/08 22:01:45 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 18:33:37 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 	item = malloc(sizeof(t_list_item));
 	if (!item)
 		return (NULL);
+	(void)state;
 	item->args = a;
 	item->type = type;
 	item->number = nb;
@@ -56,7 +57,7 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 		item->state = THINKING;
 	}
 	if (type == PHILOSOPHER && nb % 2 == 0)
-		item->state = state;
+		item->state = THINKING;
 	else if (type == FORK)
 		pthread_mutex_init(&item->mutex, NULL);
 	item->prev = NULL;

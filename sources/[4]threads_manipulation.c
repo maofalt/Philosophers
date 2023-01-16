@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2022/12/09 22:10:21 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 18:36:26 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	ft_create_threads(t_list_item *list)
 	struct timeval	start;
 	int				*nbr_philo_full;
 	int				*someone_died;
-	pthread_t		monitor_thread;
+	pthread_t		*monitor_thread;
 
 	display_mutex = malloc(sizeof(pthread_mutex_t));
 	if (!display_mutex)
@@ -61,5 +61,6 @@ void	ft_create_threads(t_list_item *list)
 		if (current == list)
 			break ;
 	}
-		pthread_create(&monitor_thread, NULL, monitor_philosophers, thread_info_list);
+	monitor_thread = malloc(sizeof(pthread_t));
+	pthread_create(monitor_thread, NULL, monitor_philosophers, thread_info);
 }

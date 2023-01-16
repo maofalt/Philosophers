@@ -6,7 +6,7 @@
 #    By: motero <motero@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/10 18:38:23 by motero            #+#    #+#              #
-#    Updated: 2022/12/09 22:06:40 by motero           ###   ########.fr        #
+#    Updated: 2023/01/16 17:55:55 by motero           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,7 +51,7 @@ SRCS_NAME_PS = [0]main.c \
 			[3]list_manipulation.c \
 			[4]threads_manipulation.c \
 			[5]philosophers_behavior.c \
-			[6]montior_thead.c
+			[6]monitor_thread.c
 
 SRCS_PS = $(addprefix $(SRCS_DIR_PS), $(SRCS_NAME_PS))
 

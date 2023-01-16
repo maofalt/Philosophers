@@ -6,7 +6,7 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/08 11:36:43 by motero            #+#    #+#             */
-/*   Updated: 2023/01/03 17:32:45 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 17:48:49 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ typedef enum e_state {
 	FORKING,
 	EATING,
 	FULL,
-	DEAD
+	DEAD,
+	END,
 }	t_state;
 
 // The type of a list item
@@ -128,5 +129,7 @@ int				ft_stop_signal(t_thread_info *info);
 /*############################################################################*/
 /*                           MONITOR	BEHAVIOR							  */
 /*############################################################################*/
-void			*monitor_thread(void *arg);
+void			*monitor_philosophers(void *arg);
+void			stop_philosophers(t_thread_info *info);
+
 #endif

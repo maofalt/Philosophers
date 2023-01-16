@@ -6,32 +6,70 @@
 /*   By: motero <motero@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/19 11:06:37 by motero            #+#    #+#             */
-/*   Updated: 2023/01/16 15:22:16 by motero           ###   ########.fr       */
+/*   Updated: 2023/01/16 18:39:08 by motero           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*monitor_thread(void *arg)
+void	*monitor_philosophers(void *arg)
 {
 	t_thread_info	*info;
-	t_list_item		*philosopher;
+	t_list_item		*node;
+	t_arguments		args;
 
 	info = (t_thread_info *)arg;
-	philosopher = info->item;
-	while (!ft_stop_signal(info))
+	node = info->item;
+	while (node)
 	{
-		if (*info->someone_died > 0)
+		if (node->type == PHILOSOPHER)
 		{
-			ft_stop_signal(info);
-			break ;
-		}	
-		if (info->args.must_eat_nbr && *info->nbr_philo_full == philosopher->args.nbr_philo)
-		{
-			ft_stop_signal(info);
-			break ;
-		}	
-		usleep(100);
+			args = node->args;
+			if (args.number_of_times_each_philosopher_must_eat > 0)
+			{
+				if (*info->nbr_philo_full >= node->args.number_of_philosophers)
+				{
+					ft_put_down_forks(info);
+					stop_philosophers(info);
+				}
+			}
+			if (*info->someone_died > 1)
+			{
+				ft_put_down_forks(info);
+				stop_philosophers(info);
+			}
+			if (*info->nbr_philo_full >= args.number_of_philosophers)
+			{
+				ft_put_down_forks(info);
+				stop_philosophers(info);
+			}
+			// if (ft_philo_starved(info->timestamps->start, info))
+			// {
+			// 	ft_put_down_forks(info);
+			// 	stop_philosophers(info);
+			// }
+		}
+		node = node->next;
 	}
-	return (NULL);
+	pthread_exit(0);
+}
+
+void	stop_philosophers(t_thread_info *info)
+{
+	t_list_item	*node;
+	int			i;
+
+	node = info->item;
+	i = 0;
+	while (node)
+	{
+		if (node->type == PHILOSOPHER)
+		{
+			node->state = END;
+			i++;
+		}
+		if (i >= node->args.number_of_philosophers)
+			break ;
+		node = node->next;
+	}
 }
