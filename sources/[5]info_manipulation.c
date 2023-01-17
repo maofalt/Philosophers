@@ -34,7 +34,7 @@ static void	ft_create_mutexes(t_thread_info *info)
 }
 
 // A function that creates the linked list of philosophers and forks
-void	*ft_create_info(t_list_item *list)
+void	ft_create_info(t_list_item *list)
 {
 	t_thread_info	*info;
 
@@ -48,7 +48,6 @@ void	*ft_create_info(t_list_item *list)
 		free(info);
 		return ;
 	}
-	//these two variables msut be the same one for everyone
 	info->nbr_philo_full = 0;
 	info->someone_died = 0;
 	ft_create_mutexes(info);

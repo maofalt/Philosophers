@@ -21,25 +21,25 @@ t_list_item	*ft_create_list(t_arguments *args)
 	t_list_item	*philosopher;
 	int			i;
 
+	first = NULL;
+	fork = NULL;
+	philosopher = NULL;
 	if (!ft_init_first_philo_fork(first, fork, args))
 		return (NULL);
 	prev = fork;
-	if (args->number_of_philosophers == 1)
-		return (first);
 	i = 2;
-	while (i <= args->number_of_philosophers)
+	while (args->number_of_philosophers > 1
+		&& i <= args->number_of_philosophers)
 	{
 		if (!ft_create_philo(philosopher, args, i, first))
 			return (NULL);
 		link_items(prev, philosopher);
-		if (!ft_create_fork(fork, args, i, first))
+		if (!ft_create_fork(fork, args, i++, first))
 			return (NULL);
 		link_items(philosopher, fork);
 		prev = fork;
-		i++;
 	}
-	link_items(prev, first);
-	return (first);
+	return (link_items(prev, first), first);
 }
 
 int	ft_init_first_philo_fork(t_list_item *first, t_list_item *fork,

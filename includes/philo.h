@@ -126,7 +126,7 @@ int				ft_philo_allocation(t_list_item *item, t_item_type type,
 /*                    INFO STRUCT MANIPULATION							      */
 /*############################################################################*/
 
-void			*ft_create_info(t_list_item *list);
+void			ft_create_info(t_list_item *list);
 
 /*############################################################################*/
 /*                           THREADS_MANIPULATION							  */
@@ -139,11 +139,11 @@ void			ft_create_threads(t_list_item *list);
 /*############################################################################*/
 
 void			*philosopher_thread(void *arg);
-void			ft_display_status(struct timeval start, t_thread_info *info);
-int				ft_try_eat(struct timeval start, t_thread_info *info);
-void			ft_put_down_forks(t_thread_info *info);
-int				ft_philo_starved(struct timeval start, t_thread_info *info);
-int				ft_stop_signal(t_thread_info *info);
+void			ft_display_status(struct timeval start, t_list_item *philo);
+int				ft_try_eat(struct timeval start, t_list_item *philo);
+void			ft_put_down_forks(t_list_item *philo);
+int				ft_philo_starved(struct timeval start, t_list_item *philo);
+int				ft_stop_signal(t_list_item *philo);
 
 /*############################################################################*/
 /*                           MONITOR	BEHAVIOR							  */

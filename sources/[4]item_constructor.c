@@ -78,4 +78,3 @@ int	ft_philo_allocation(t_list_item *item, t_item_type type, int nb)
 		item->state = THINKING;
 	return (1);
 }
-
