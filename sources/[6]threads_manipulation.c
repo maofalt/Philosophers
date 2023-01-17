@@ -29,18 +29,26 @@ void	ft_create_threads(t_list_item *list)
 	gettimeofday(&start, NULL);
 	while (current)
 	{
-		current->info->timestamps->start = start;
-		current->info->timestamps->start_last_meal = start;
-		current->info->nbr_philo_full = &nbr_philo_full;
-		current->info->someone_died = &someone_died;
+		ft_init_shared_time(current, start);
+		ft_init_shared_info(current, &nbr_philo_full, &someone_died);
 		if (current->type == PHILOSOPHER)
-		{
-			pthread_create(current->thread, NULL,
-				philosopher_thread, current);
-		}
+			pthread_create(current->thread, NULL, philo_thread, current);
 		current = current->next;
 		if (current == list || current->args.number_of_philosophers == 1)
 			break ;
 	}
 	pthread_create(monitor_thread, NULL, monitor_philosophers, list);
+}
+
+void	ft_init_shared_time(t_list_item *current, struct timeval start)
+{
+	current->info->timestamps->start = start;
+	current->info->timestamps->start_last_meal = start;
+}
+
+void	ft_init_shared_info(t_list_item *current, int *nbr_philo_full,
+	int *someone_died)
+{
+	current->info->nbr_philo_full = nbr_philo_full;
+	current->info->someone_died = someone_died;
 }

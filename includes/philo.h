@@ -133,12 +133,15 @@ void			ft_create_info(t_list_item *list);
 /*############################################################################*/
 
 void			ft_create_threads(t_list_item *list);
+void			ft_init_shared_time(t_list_item *current, struct timeval start);
+void			ft_init_shared_info(t_list_item *current, int *nbr_philo_full,
+					int *someone_died);
 
 /*############################################################################*/
 /*                           PHILOSOPHERS BEHAVIOR							  */
 /*############################################################################*/
 
-void			*philosopher_thread(void *arg);
+void			*philo_thread(void *arg);
 void			ft_display_status(struct timeval start, t_list_item *philo);
 int				ft_try_eat(struct timeval start, t_list_item *philo);
 void			ft_put_down_forks(t_list_item *philo);

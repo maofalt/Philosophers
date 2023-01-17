@@ -14,7 +14,7 @@
 
 // A function that runs in a separate thread for each philosopher
 
-void	*philosopher_thread(void *arg)
+void	*philo_thread(void *arg)
 {
 	t_list_item		*philosopher;
 
