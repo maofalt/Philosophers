@@ -106,6 +106,12 @@ t_arguments		*ft_parse_arguments(int argc, char **argv);
 t_list_item		*ft_create_list(t_arguments *args);
 t_list_item		*create_item(t_item_type type, t_state state,
 					t_arguments a, int nb);
+int				ft_init_first_philo_fork(t_list_item *first, t_list_item *fork,
+					t_arguments *args);
+int				ft_create_philo(t_list_item *philosopher, t_arguments *args,
+					int i, t_list_item *first);
+int				ft_create_fork(t_list_item *fork, t_arguments *args, int i,
+					t_list_item *first);
 void			link_items(t_list_item *prev, t_list_item *next);
 void			ft_print_list(t_list_item *first);
 void			free_list(t_list_item *first);

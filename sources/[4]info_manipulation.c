@@ -12,33 +12,13 @@
 
 #include "philo.h"
 
-// A function that creates the linked list of philosophers and forks
-void	*ft_create_info(t_list_item *list)
+static void	ft_create_mutexes(t_thread_info *info)
 {
-	t_thread_info	*info;
-
-	info = malloc(sizeof(t_thread_info));
-	if (!info)
-	{
-		info = NULL;
-		return ;
-	}
-	ft_memset(info, 0, sizeof(t_thread_info));
-	info->timestamps = ft_calloc(1, sizeof(t_timestamps));
-	if (!info->timestamps)
-	{
-		free(info);
-		info = NULL;
-		return ;
-	}
-	info->nbr_philo_full = 0;
-	info->someone_died = 0;
 	info->display_mutex = malloc(sizeof(pthread_mutex_t));
 	if (!info->display_mutex)
 	{
 		free(info->timestamps);
 		free(info);
-		info = NULL;
 		return ;
 	}
 	info->death_mutex = malloc(sizeof(pthread_mutex_t));
@@ -47,9 +27,31 @@ void	*ft_create_info(t_list_item *list)
 		free(info->display_mutex);
 		free(info->timestamps);
 		free(info);
-		info = NULL;
 		return ;
 	}
 	pthread_mutex_init(info->display_mutex, NULL);
 	pthread_mutex_init(info->death_mutex, NULL);
+}
+
+// A function that creates the linked list of philosophers and forks
+void	*ft_create_info(t_list_item *list)
+{
+	t_thread_info	*info;
+
+	info = malloc(sizeof(t_thread_info));
+	if (!info)
+		return ;
+	ft_memset(info, 0, sizeof(t_thread_info));
+	info->timestamps = ft_calloc(1, sizeof(t_timestamps));
+	if (!info->timestamps)
+	{
+		free(info);
+		return ;
+	}
+	info->nbr_philo_full = 0;
+	info->someone_died = 0;
+	ft_create_mutexes(info);
+	if (!info->display_mutex || !info->death_mutex)
+		return ;
+	list->info = info;
 }

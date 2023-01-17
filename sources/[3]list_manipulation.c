@@ -21,24 +21,65 @@ t_list_item	*ft_create_list(t_arguments *args)
 	t_list_item	*philosopher;
 	int			i;
 
-	first = create_item(PHILOSOPHER, HUNGRY, *args, 1);
-	fork = create_item(FORK, 0, *args, 1);
-	link_items(first, fork);
+	if (!ft_init_first_philo_fork(first, fork, args))
+		return (NULL);
 	prev = fork;
 	if (args->number_of_philosophers == 1)
 		return (first);
 	i = 2;
 	while (i <= args->number_of_philosophers)
 	{
-		philosopher = create_item(PHILOSOPHER, HUNGRY, *args, i);
+		if (!ft_create_philo(philosopher, args, i, first))
+			return (NULL);
 		link_items(prev, philosopher);
-		fork = create_item(FORK, 0, *args, i);
+		if (!ft_create_fork(fork, args, i, first))
+			return (NULL);
 		link_items(philosopher, fork);
 		prev = fork;
 		i++;
 	}
 	link_items(prev, first);
 	return (first);
+}
+
+int	ft_init_first_philo_fork(t_list_item *first, t_list_item *fork,
+t_arguments *args)
+{
+	first = create_item(PHILOSOPHER, HUNGRY, *args, 1);
+	if (first == NULL)
+		return (0);
+	fork = create_item(FORK, 0, *args, 1);
+	if (fork == NULL)
+	{
+		free(first);
+		return (0);
+	}
+	link_items(first, fork);
+	return (1);
+}
+
+int	ft_create_philo(t_list_item *philosopher, t_arguments *args, int i,
+t_list_item *first)
+{
+	philosopher = create_item(PHILOSOPHER, HUNGRY, *args, i);
+	if (philosopher == NULL)
+	{
+		free_list(first);
+		return (0);
+	}
+	return (1);
+}
+
+int	ft_create_fork(t_list_item *fork, t_arguments *args, int i,
+t_list_item *first)
+{
+	fork = create_item(FORK, 0, *args, i);
+	if (fork == NULL)
+	{
+		free_list(first);
+		return (0);
+	}
+	return (1);
 }
 
 // A helper function that creates a philosopher  or a fork with a given number
@@ -56,6 +97,11 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 	if (type == PHILOSOPHER)
 	{
 		item->thread = malloc(sizeof(pthread_t));
+		if (item->thread == NULL)
+		{
+			free(item);
+			return (NULL);
+		}
 		item->state = THINKING;
 	}
 	if (type == PHILOSOPHER && nb % 2 == 0)
@@ -64,6 +110,15 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 		pthread_mutex_init(&item->mutex, NULL);
 	item->prev = NULL;
 	item->next = NULL;
+	ft_create_info(item);
+	if (item->info == NULL)
+	{
+		if (type == FORK)
+			pthread_mutex_destroy(&item->mutex);
+		free(item->thread);
+		free(item);
+		return (NULL);
+	}
 	return (item);
 }
 
