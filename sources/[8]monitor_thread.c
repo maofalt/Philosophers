@@ -43,11 +43,11 @@ void	*monitor_philosophers(void *arg)
 				ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
-			if (ft_philo_starved(info->timestamps->start, node))
-			{
-				ft_put_down_forks(node);
-				stop_philosophers(node);
-			}
+			// if (ft_philo_starved(info->timestamps->start, node))
+			// {
+			// 	ft_put_down_forks(node);
+			// 	stop_philosophers(node);
+			// }
 		}
 		if (node->args.number_of_philosophers > 1)
 			node = node->next;

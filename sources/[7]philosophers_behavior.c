@@ -221,8 +221,6 @@ int	ft_philo_starved(struct timeval start, t_list_item *philo)
 	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->start_last_meal.tv_sec) * 1000
 		+ (current.tv_usec - info->timestamps->start_last_meal.tv_usec) / 1000;
 	start_last_meal = info->timestamps->delta_last_meal;
-	if (philo->number == 1)
-		printf("time since last meal: %d\n", start_last_meal);
 	if (start_last_meal >= philo->args.time_to_die && philo->state != EATING)
 	{
 		philo->state = DEAD;
