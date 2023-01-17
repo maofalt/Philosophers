@@ -29,7 +29,7 @@
 typedef struct s_timestamps {
 	struct timeval	start;
 	struct timeval	current;
-	struct timeval	last_meal;
+	struct timeval	start_last_meal;
 	int				delta_time;
 	int				delta_last_meal;
 }	t_timestamps;
@@ -75,7 +75,6 @@ typedef struct s_thread_info {
 	pthread_mutex_t	*death_mutex;
 }					t_thread_info;
 
-
 typedef struct s_list_item {
 	t_arguments				args;
 	t_item_type				type;
@@ -87,7 +86,6 @@ typedef struct s_list_item {
 	pthread_t				*thread;
 	t_thread_info			*info;
 }	t_list_item;
-
 
 /*############################################################################*/
 /*                           VALID_ARGUMENTS							      */
@@ -111,6 +109,12 @@ t_list_item		*create_item(t_item_type type, t_state state,
 void			link_items(t_list_item *prev, t_list_item *next);
 void			ft_print_list(t_list_item *first);
 void			free_list(t_list_item *first);
+
+/*############################################################################*/
+/*                    INFO STRUCT MANIPULATION							      */
+/*############################################################################*/
+
+void			*ft_create_info(t_list_item *list);
 
 /*############################################################################*/
 /*                           THREADS_MANIPULATION							  */

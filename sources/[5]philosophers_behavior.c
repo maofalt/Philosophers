@@ -197,7 +197,7 @@ int	ft_try_eat(struct timeval start, t_thread_info *info)
 	if (philosopher->state != EATING)
 		return (0);
 	gettimeofday(&current, NULL);
-	info->timestamps->last_meal = current;
+	info->timestamps->start_last_meal = current;
 	return (1);
 }
 
@@ -218,8 +218,8 @@ void	ft_put_down_forks(t_thread_info *info)
 	if (right_fork)
 		pthread_mutex_unlock(&right_fork->mutex);
 	gettimeofday(&current, NULL);
-	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->last_meal.tv_sec) * 1000
-		+ (current.tv_usec - info->timestamps->last_meal.tv_usec) / 1000;
+	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->start_last_meal.tv_sec) * 1000
+		+ (current.tv_usec - info->timestamps->start_last_meal.tv_usec) / 1000;
 	info->times_eaten++;
 	if (info->times_eaten == philosopher->args.number_of_times_each_philosopher_must_eat)
 		*info->nbr_philo_full += 1;
@@ -227,19 +227,19 @@ void	ft_put_down_forks(t_thread_info *info)
 
 int	ft_philo_starved(struct timeval start, t_thread_info *info)
 {
-	int				last_meal;
+	int				start_last_meal;
 	t_list_item		*philosopher;
 	struct timeval	current;
 
 	philosopher = info->item;
 	gettimeofday(&current, NULL);
 	//printf("philosopher %d\n", philosopher->number);
-	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->last_meal.tv_sec) * 1000
-		+ (current.tv_usec - info->timestamps->last_meal.tv_usec) / 1000;
-	last_meal = info->timestamps->delta_last_meal;
+	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->start_last_meal.tv_sec) * 1000
+		+ (current.tv_usec - info->timestamps->start_last_meal.tv_usec) / 1000;
+	start_last_meal = info->timestamps->delta_last_meal;
 	if (philosopher->number == 1)
-		printf("time since last meal: %d\n", last_meal);
-	if (last_meal >= philosopher->args.time_to_die && philosopher->state != EATING)
+		printf("time since last meal: %d\n", start_last_meal);
+	if (start_last_meal >= philosopher->args.time_to_die && philosopher->state != EATING)
 	{
 		philosopher->state = DEAD;
 		pthread_mutex_lock(info->death_mutex);

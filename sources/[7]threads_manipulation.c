@@ -49,7 +49,7 @@ void	ft_create_threads(t_list_item *list)
 			return ;
 		ft_memset(thread_info->timestamps, 0, sizeof(t_timestamps));
 		thread_info->timestamps->start = start;
-		thread_info->timestamps->last_meal = start;
+		thread_info->timestamps->start_last_meal = start;
 		*nbr_philo_full = 0;
 		*someone_died = 0;
 		thread_info->nbr_philo_full = nbr_philo_full;
