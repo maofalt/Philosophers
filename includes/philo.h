@@ -152,6 +152,6 @@ int				ft_stop_signal(t_list_item *philo);
 /*                           MONITOR	BEHAVIOR							  */
 /*############################################################################*/
 void			*monitor_philosophers(void *arg);
-void			stop_philosophers(t_thread_info *info);
+void			stop_philosophers(t_list_item *phlo);
 
 #endif
