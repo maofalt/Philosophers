@@ -108,9 +108,11 @@ void	*philo_thread(void *arg)
 void	ft_display_status(struct timeval start, t_list_item *philo)
 {
 	struct timeval	current;
+	t_thread_info	*info;
 	int				timestamp;
 	int				i;
 
+	info = philo->info;
 	pthread_mutex_lock(info->display_mutex);
 	gettimeofday(&current, NULL);
 	info->timestamps->current = current;
@@ -153,12 +155,12 @@ int	ft_try_eat(struct timeval start, t_list_item *philo)
 		if (right_fork)
 		{
 			pthread_mutex_lock(&right_fork->mutex);
-			ft_display_status(start, info);
+			ft_display_status(start, philo);
 		}
 		if (left_fork)
 		{
 			pthread_mutex_lock(&left_fork->mutex);
-			ft_display_status(start, info);
+			ft_display_status(start, philo);
 		}
 		philo->state = EATING;
 	}
@@ -168,12 +170,12 @@ int	ft_try_eat(struct timeval start, t_list_item *philo)
 		if (left_fork)
 		{
 			pthread_mutex_lock(&left_fork->mutex);
-			ft_display_status(start, info);
+			ft_display_status(start, philo);
 		}
 		if (right_fork)
 		{
 			pthread_mutex_lock(&right_fork->mutex);
-			ft_display_status(start, info);
+			ft_display_status(start, philo);
 		}
 		if (left_fork && right_fork)
 			philo->state = EATING;
@@ -227,7 +229,7 @@ int	ft_philo_starved(struct timeval start, t_list_item *philo)
 		pthread_mutex_lock(info->death_mutex);
 			*info->someone_died += 1;
 		if (*info->someone_died == 1)
-			ft_display_status(start, info);
+			ft_display_status(start, philo);
 		pthread_mutex_unlock(info->death_mutex);
 		return (1);
 	}
