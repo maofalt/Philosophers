@@ -30,6 +30,7 @@ void	ft_create_threads(t_list_item *list)
 	if (!death_mutex)
 		return ;
 	pthread_mutex_init(display_mutex, NULL);
+	pthread_mutex_init(death_mutex, NULL);
 	current = list;
 	gettimeofday(&start, NULL);
 	nbr_philo_full = malloc(sizeof(int));
@@ -58,9 +59,10 @@ void	ft_create_threads(t_list_item *list)
 			pthread_create(current->thread, NULL, philosopher_thread, thread_info);
 		}
 		current = current->next;
-		if (current == list)
+		if (current == list || current->args.number_of_philosophers == 1)
 			break ;
 	}
 	monitor_thread = malloc(sizeof(pthread_t));
+	thread_info->item = list;
 	pthread_create(monitor_thread, NULL, monitor_philosophers, thread_info);
 }

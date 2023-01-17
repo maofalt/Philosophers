@@ -18,23 +18,20 @@ void	*philosopher_thread(void *arg)
 {
 	t_thread_info	*info;
 	t_list_item		*philosopher;
-	t_arguments		args;
-	int				time;
-	int				time_loop;
+	//int				time;
+	//int				time_loop;
 
 	info = (t_thread_info *)arg;
 	philosopher = info->item;
-	args = (t_arguments)philosopher->args;
 	while (!ft_stop_signal(info))
 	{
-		if (philosopher->state == SLEEPING)
-			time_loop = philosopher->args.time_to_sleep * 10;
-		else if (philosopher->state == THINKING)
-			time_loop = philosopher->args.time_to_die * 10;
+		// if (philosopher->state == SLEEPING)
+		// 	time_loop = philosopher->args.time_to_sleep * 10;
+		// else if (philosopher->state == THINKING)
+		// 	time_loop = philosopher->args.time_to_die * 10;
 		if (philosopher->state == SLEEPING)
 		{
 			ft_display_status(info->timestamps->start, info);
-			time = 0;
 			usleep(philosopher->args.time_to_sleep * 1000);
 			// while (time++ < time_loop)
 			// 	usleep(1000);
@@ -49,12 +46,12 @@ void	*philosopher_thread(void *arg)
 		{
 			if (!ft_try_eat(info->timestamps->start, info))
 			{
-				philosopher->state -= 1;
-				continue ;
+				while (!ft_stop_signal(info))
+					usleep(500);
 			}
 			ft_display_status(info->timestamps->start, info);
-			time_loop = philosopher->args.time_to_eat;
-			time = 0;
+			// time_loop = philosopher->args.time_to_eat;
+			// time = 0;
 			usleep(philosopher->args.time_to_eat * 1000);
 			// while (time++ < time_loop)
 			// 	usleep(1000);
@@ -186,13 +183,11 @@ int	ft_try_eat(struct timeval start, t_thread_info *info)
 		philosopher->state = FORKING;
 		if (left_fork)
 		{
-			printf("Philosopher is trying to pick up left fork \n");
 			pthread_mutex_lock(&left_fork->mutex);
 			ft_display_status(start, info);
 		}
 		if (right_fork)
 		{
-			printf("Philosopher is trying to pick up right fork \n");
 			pthread_mutex_lock(&right_fork->mutex);
 			ft_display_status(start, info);
 		}
@@ -218,8 +213,10 @@ void	ft_put_down_forks(t_thread_info *info)
 	philosopher = info->item;
 	left_fork = philosopher->prev;
 	right_fork = philosopher->next;
-	pthread_mutex_unlock(&left_fork->mutex);
-	pthread_mutex_unlock(&right_fork->mutex);
+	if (left_fork)
+		pthread_mutex_unlock(&left_fork->mutex);
+	if (right_fork)
+		pthread_mutex_unlock(&right_fork->mutex);
 	gettimeofday(&current, NULL);
 	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->last_meal.tv_sec) * 1000
 		+ (current.tv_usec - info->timestamps->last_meal.tv_usec) / 1000;
@@ -230,20 +227,19 @@ void	ft_put_down_forks(t_thread_info *info)
 
 int	ft_philo_starved(struct timeval start, t_thread_info *info)
 {
-	int				elapsed_time;
 	int				last_meal;
 	t_list_item		*philosopher;
 	struct timeval	current;
 
 	philosopher = info->item;
 	gettimeofday(&current, NULL);
-	info->timestamps->delta_time = (current.tv_sec - start.tv_sec) * 1000
-		+ (current.tv_usec - start.tv_usec) / 1000;
-	elapsed_time = info->timestamps->delta_time;
+	//printf("philosopher %d\n", philosopher->number);
 	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->last_meal.tv_sec) * 1000
 		+ (current.tv_usec - info->timestamps->last_meal.tv_usec) / 1000;
 	last_meal = info->timestamps->delta_last_meal;
-	if (last_meal >= philosopher->args.time_to_die)
+	if (philosopher->number == 1)
+		printf("time since last meal: %d\n", last_meal);
+	if (last_meal >= philosopher->args.time_to_die && philosopher->state != EATING)
 	{
 		philosopher->state = DEAD;
 		pthread_mutex_lock(info->death_mutex);
@@ -273,7 +269,7 @@ int	ft_stop_signal(t_thread_info *info)
 			pthread_exit(0);
 		}
 	}
-	if (*info->someone_died > 1)
+	if (*info->someone_died >= 1)
 	{
 		ft_put_down_forks(info);
 		pthread_exit(0);

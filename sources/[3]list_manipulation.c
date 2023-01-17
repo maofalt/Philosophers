@@ -25,7 +25,6 @@ t_list_item	*ft_create_list(t_arguments *args)
 	fork = create_item(FORK, 0, *args, 1);
 	link_items(first, fork);
 	prev = fork;
-	printf("nbr of philo: %d\n", args->number_of_philosophers);
 	if (args->number_of_philosophers == 1)
 		return (first);
 	i = 2;
@@ -72,7 +71,7 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 void	link_items(t_list_item *prev, t_list_item *next)
 {
 	prev->next = next;
-	next->make = prev;
+	next->prev = prev;
 }
 
 // A function that prints the linked list of philosophers and forks

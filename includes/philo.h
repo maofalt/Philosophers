@@ -65,6 +65,17 @@ typedef enum e_item_type {
 // 	- The philosopher or fork id
 // 	- A pointer to the next item in the list
 // 	- A pointer to the previous item in the list
+
+typedef struct s_thread_info {
+	t_timestamps	*timestamps;
+	int				times_eaten;
+	int				*nbr_philo_full;
+	int				*someone_died;
+	pthread_mutex_t	*display_mutex;
+	pthread_mutex_t	*death_mutex;
+}					t_thread_info;
+
+
 typedef struct s_list_item {
 	t_arguments				args;
 	t_item_type				type;
@@ -74,17 +85,9 @@ typedef struct s_list_item {
 	struct s_list_item		*prev;
 	pthread_mutex_t			mutex;
 	pthread_t				*thread;
+	t_thread_info			*info;
 }	t_list_item;
 
-typedef struct s_thread_info {
-	t_list_item		*item;
-	t_timestamps	*timestamps;
-	int				times_eaten;
-	int				*nbr_philo_full;
-	int				*someone_died;
-	pthread_mutex_t	*display_mutex;
-	pthread_mutex_t	*death_mutex;
-}	t_thread_info;
 
 /*############################################################################*/
 /*                           VALID_ARGUMENTS							      */

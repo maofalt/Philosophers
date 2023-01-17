@@ -20,12 +20,10 @@ void	*monitor_philosophers(void *arg)
 
 	info = (t_thread_info *)arg;
 	node = info->item;
-	printf("type %d\n", node->type);
 	while (node)
 	{
 		if (node->type == PHILOSOPHER)
 		{
-			printf("nbr loop\n");
 			args = node->args;
 			if (args.number_of_times_each_philosopher_must_eat > 0)
 			{
@@ -35,7 +33,7 @@ void	*monitor_philosophers(void *arg)
 					stop_philosophers(info);
 				}
 			}
-			if (*info->someone_died > 1)
+			if (*info->someone_died >= 1)
 			{
 				ft_put_down_forks(info);
 				stop_philosophers(info);
@@ -75,4 +73,5 @@ void	stop_philosophers(t_thread_info *info)
 			break ;
 		node = node->next;
 	}
+	pthread_exit(0);
 }

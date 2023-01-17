@@ -28,7 +28,6 @@ int	main(int argc, char **argv)
 	list = ft_create_list(args);
 	if (!list)
 		return (free(args), 0);
-	//ft_print_list(list);
 	ft_create_threads(list);
 	free_list(list);
 	free(args);
