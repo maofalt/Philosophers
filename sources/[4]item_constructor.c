@@ -12,25 +12,25 @@
 
 #include "philo.h"
 
-int	ft_create_philo(t_list_item *philosopher, t_arguments *args, int i,
-t_list_item *first)
+int	ft_create_philo(t_list_item **philosopher, t_arguments *args, int i,
+t_list_item **first)
 {
-	philosopher = create_item(PHILOSOPHER, HUNGRY, *args, i);
-	if (philosopher == NULL)
+	*philosopher = create_item(PHILOSOPHER, HUNGRY, *args, i);
+	if (*philosopher == NULL)
 	{
-		free_list(first);
+		free_list(*first);
 		return (0);
 	}
 	return (1);
 }
 
-int	ft_create_fork(t_list_item *fork, t_arguments *args, int i,
-t_list_item *first)
+int	ft_create_fork(t_list_item **fork, t_arguments *args, int i,
+t_list_item **first)
 {
-	fork = create_item(FORK, 0, *args, i);
+	*fork = create_item(FORK, 0, *args, i);
 	if (fork == NULL)
 	{
-		free_list(first);
+		free_list(*first);
 		return (0);
 	}
 	return (1);

@@ -21,20 +21,17 @@ t_list_item	*ft_create_list(t_arguments *args)
 	t_list_item	*philosopher;
 	int			i;
 
-	first = NULL;
-	fork = NULL;
-	philosopher = NULL;
-	if (!ft_init_first_philo_fork(first, fork, args))
+	if (!ft_init_first_philo_fork(&first, &fork, args))
 		return (NULL);
 	prev = fork;
 	i = 2;
 	while (args->number_of_philosophers > 1
 		&& i <= args->number_of_philosophers)
 	{
-		if (!ft_create_philo(philosopher, args, i, first))
+		if (!ft_create_philo(&philosopher, args, i, &first))
 			return (NULL);
 		link_items(prev, philosopher);
-		if (!ft_create_fork(fork, args, i++, first))
+		if (!ft_create_fork(&fork, args, i++, &first))
 			return (NULL);
 		link_items(philosopher, fork);
 		prev = fork;
@@ -42,19 +39,19 @@ t_list_item	*ft_create_list(t_arguments *args)
 	return (link_items(prev, first), first);
 }
 
-int	ft_init_first_philo_fork(t_list_item *first, t_list_item *fork,
+int	ft_init_first_philo_fork(t_list_item **first, t_list_item **fork,
 t_arguments *args)
 {
-	first = create_item(PHILOSOPHER, HUNGRY, *args, 1);
-	if (first == NULL)
+	*first = create_item(PHILOSOPHER, HUNGRY, *args, 1);
+	if (*first == NULL)
 		return (0);
-	fork = create_item(FORK, 0, *args, 1);
-	if (fork == NULL)
+	*fork = create_item(FORK, 0, *args, 1);
+	if (*fork == NULL)
 	{
-		free(first);
+		free(*first);
 		return (0);
 	}
-	link_items(first, fork);
+	link_items(*first, *fork);
 	return (1);
 }
 
