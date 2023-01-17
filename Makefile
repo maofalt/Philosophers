@@ -49,10 +49,11 @@ SRCS_NAME_PS = [0]main.c \
 			[1]valid_arguments.c \
 			[2]parse_arguments.c \
 			[3]list_manipulation.c \
-			[4]info_manipulation.c \
-			[5]threads_manipulation.c \
-			[6]philosophers_behavior.c \
-			[7]monitor_thread.c
+			[4]items_constructor.c \
+			[5]info_manipulation.c \
+			[6]threads_manipulation.c \
+			[7]philosophers_behavior.c \
+			[8]monitor_thread.c
 
 SRCS_PS = $(addprefix $(SRCS_DIR_PS), $(SRCS_NAME_PS))
 
