@@ -50,6 +50,7 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 	item->args = a;
 	item->type = type;
 	item->number = nb;
+	item->times_eaten = 0;
 	item->timestamps = NULL;
 	if (ft_philo_allocation(item, type, state) == 0)
 		return (NULL);

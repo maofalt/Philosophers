@@ -67,7 +67,6 @@ typedef enum e_item_type {
 // 	- A pointer to the previous item in the list
 
 typedef struct s_thread_info {
-	int				times_eaten;
 	int				nbr_philo_full;
 	int				someone_died;
 	pthread_mutex_t	*display_mutex;
@@ -79,6 +78,7 @@ typedef struct s_list_item {
 	t_item_type				type;
 	t_state					state;
 	int						number;
+	int						times_eaten;
 	struct s_list_item		*next;
 	struct s_list_item		*prev;
 	pthread_mutex_t			mutex;

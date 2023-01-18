@@ -134,8 +134,8 @@ void	ft_put_down_forks(t_list_item *philo)
 	gettimeofday(&current, NULL);
 	philo->timestamps->delta_last_meal = (current.tv_sec - philo->timestamps->start_last_meal.tv_sec) * 1000
 		+ (current.tv_usec - philo->timestamps->start_last_meal.tv_usec) / 1000;
-	info->times_eaten++;
-	if (info->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
+	philo->times_eaten++;
+	if (philo->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
 		info->nbr_philo_full += 1;
 }
 

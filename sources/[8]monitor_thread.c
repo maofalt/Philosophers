@@ -26,7 +26,7 @@ void	*monitor_philosophers(void *arg)
 		{
 			info = node->info;
 			args = node->args;
-			if (args.number_of_times_each_philosopher_must_eat > 0)
+			if (args.number_of_times_each_philosopher_must_eat >= 0)
 			{
 				if (info->nbr_philo_full >= node->args.number_of_philosophers)
 				{
@@ -42,11 +42,6 @@ void	*monitor_philosophers(void *arg)
 				stop_philosophers(node);
 			}
 			pthread_mutex_unlock(info->death_mutex);
-			if (info->nbr_philo_full >= args.number_of_philosophers)
-			{
-				ft_put_down_forks(node);
-				stop_philosophers(node);
-			}
 			if (ft_philo_starved(node->timestamps->start, node))
 			{
 				ft_put_down_forks(node);
