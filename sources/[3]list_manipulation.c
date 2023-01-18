@@ -36,7 +36,9 @@ t_list_item	*ft_create_list(t_arguments *args)
 		link_items(philosopher, fork);
 		prev = fork;
 	}
-	return (link_items(prev, first), first);
+	if (args->number_of_philosophers > 1)
+		link_items(prev, first);
+	return (first);
 }
 
 int	ft_init_first_philo_fork(t_list_item **first, t_list_item **fork,

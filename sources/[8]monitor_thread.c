@@ -24,6 +24,7 @@ void	*monitor_philosophers(void *arg)
 	{
 		if (node->type == PHILOSOPHER)
 		{
+			info = node->info;
 			args = node->args;
 			if (args.number_of_times_each_philosopher_must_eat > 0)
 			{

@@ -52,58 +52,6 @@ void	*philo_thread(void *arg)
 	pthread_exit(0);
 }
 
-// void	*philosopher_thread(void *arg)
-// {
-// 	t_thread_info	*info;
-// 	t_list_item		*philosopher;
-// 	t_arguments		args;
-// 	int				time;
-// 	int				time_loop;
-
-// 	info = (t_thread_info *)arg;
-// 	philosopher = info->item;
-// 	args = (t_arguments)philosopher->args;
-// 	while (!ft_stop_signal(info))
-// 	{
-// 		if (philosopher->state == SLEEPING)
-// 			time_loop = philosopher->args.time_to_sleep * 10;
-// 		else if (philosopher->state == THINKING)
-// 			time_loop = philosopher->args.time_to_die * 10;
-// 		if (philosopher->state == SLEEPING)
-// 		{
-// 			ft_display_status(info->timestamps->start, info);
-// 			time = 0;
-// 			while (time < time_loop && !ft_stop_signal(info))
-// 			{
-// 				usleep(500);
-// 				time += 1;
-// 			}
-// 			philosopher->state += 1;
-// 		}
-// 		if (philosopher->state == THINKING && !ft_stop_signal(info))
-// 		{
-// 			ft_display_status(info->timestamps->start, info);
-// 			philosopher->state += 1;
-// 		}
-// 		if (philosopher->state == HUNGRY &&!ft_stop_signal(info))
-// 		{
-// 			ft_try_eat(info->timestamps->start, info);
-// 			time_loop = philosopher->args.time_to_eat;
-// 			ft_display_status(info->timestamps->start, info);
-// 			time = 0;
-// 			while (time < time_loop && !ft_stop_signal(info))
-// 			{
-// 				usleep(500);
-// 				time += 1;
-// 			}
-// 			ft_put_down_forks(info);
-// 			ft_stop_signal(info);
-// 			philosopher->state = SLEEPING;
-// 		}
-// 	}
-// 	return (NULL);
-// }
-
 // Function to display the current state of a philosopher
 void	ft_display_status(struct timeval start, t_list_item *philo)
 {
