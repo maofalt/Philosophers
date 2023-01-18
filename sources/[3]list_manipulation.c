@@ -44,7 +44,13 @@ t_list_item	*ft_create_list(t_arguments *args)
 int	ft_init_first_philo_fork(t_list_item **first, t_list_item **fork,
 t_arguments *args)
 {
-	*first = create_item(PHILOSOPHER, HUNGRY, *args, 1);
+	t_state	state;
+
+	if (args->number_of_philosophers % 2 == 0)
+		state = SLEEPING;
+	else
+		state = THINKING;
+	*first = create_item(PHILOSOPHER, state, *args, 1);
 	if (*first == NULL)
 		return (0);
 	*fork = create_item(FORK, 0, *args, 1);

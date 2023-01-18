@@ -15,7 +15,10 @@
 int	ft_create_philo(t_list_item **philosopher, t_arguments *args, int i,
 t_list_item **first)
 {
-	*philosopher = create_item(PHILOSOPHER, HUNGRY, *args, i);
+	t_state	state;
+
+	state = ft_decide_state(PHILOSOPHER, *args, i);
+	*philosopher = create_item(PHILOSOPHER, state, *args, i);
 	if (*philosopher == NULL)
 	{
 		free_list(*first);
@@ -44,11 +47,10 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 	item = malloc(sizeof(t_list_item));
 	if (!item)
 		return (NULL);
-	(void)state;
 	item->args = a;
 	item->type = type;
 	item->number = nb;
-	if (ft_philo_allocation(item, type, nb) == 0)
+	if (ft_philo_allocation(item, type, state) == 0)
 		return (NULL);
 	else if (type == FORK)
 		pthread_mutex_init(&item->mutex, NULL);
@@ -58,16 +60,42 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 	return (item);
 }
 
-int	ft_philo_allocation(t_list_item *item, t_item_type type, int nb)
+int	ft_philo_allocation(t_list_item *item, t_item_type type, t_state state)
 {
 	if (type == PHILOSOPHER)
 	{
 		item->thread = malloc(sizeof(pthread_t));
 		if (item->thread == NULL)
 			return (free(item), 0);
-		item->state = THINKING;
+		item->state = state;
 	}
-	if (type == PHILOSOPHER && nb % 2 == 0)
-		item->state = THINKING;
 	return (1);
+}
+
+// A helper function that decides the state of a philosopher
+/* if total_nbr_philo is even, even philosopher start with THINKING state
+** if total_nbr_philo is odd, odd philosopher start with THINKING state
+** if total_nbr_philo is even, odd philosopher start with SLEEPING state
+** if total_nbr_philo is odd, even philosopher start with SLEEPING state
+*/
+t_state	ft_decide_state(t_item_type type, t_arguments a, int nb)
+{
+	if (type == PHILOSOPHER)
+	{
+		if (a.number_of_philosophers % 2 == 0)
+		{
+			if (nb % 2 == 0)
+				return (THINKING);
+			else
+				return (SLEEPING);
+		}
+		else
+		{
+			if (nb % 2 == 0)
+				return (SLEEPING);
+			else
+				return (THINKING);
+		}
+	}
+	return (0);
 }

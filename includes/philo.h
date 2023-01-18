@@ -120,7 +120,8 @@ int				ft_create_philo(t_list_item **philosopher, t_arguments *args,
 int				ft_create_fork(t_list_item **fork, t_arguments *args, int i,
 					t_list_item **first);
 int				ft_philo_allocation(t_list_item *item, t_item_type type,
-					int nb);
+					t_state state);
+t_state			ft_decide_state(t_item_type type, t_arguments a, int nb);
 
 /*############################################################################*/
 /*                    INFO STRUCT MANIPULATION							      */
