@@ -170,9 +170,11 @@ int	ft_stop_signal(t_list_item *philo)
 
 	info = philo->info;
 	args = philo->args;
-	if (args.number_of_times_each_philosopher_must_eat > 0)
+	if (args.number_of_times_each_philosopher_must_eat >= 0)
 	{
-		if (info->nbr_philo_full >= philo->args.number_of_philosophers)
+		if (args.number_of_times_each_philosopher_must_eat == 0)
+			info->nbr_philo_full = philo->args.number_of_philosophers;
+		if (info->nbr_philo_full >= args.number_of_philosophers)
 		{
 			ft_put_down_forks(philo);
 			pthread_exit(0);

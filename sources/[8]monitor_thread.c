@@ -28,6 +28,8 @@ void	*monitor_philosophers(void *arg)
 			args = node->args;
 			if (args.number_of_times_each_philosopher_must_eat >= 0)
 			{
+				if (args.number_of_times_each_philosopher_must_eat == 0)
+					info->nbr_philo_full = node->args.number_of_philosophers;
 				if (info->nbr_philo_full >= node->args.number_of_philosophers)
 				{
 					ft_put_down_forks(node);
