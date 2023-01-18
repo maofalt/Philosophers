@@ -17,7 +17,6 @@ static void	ft_create_mutexes(t_thread_info *info)
 	info->display_mutex = malloc(sizeof(pthread_mutex_t));
 	if (!info->display_mutex)
 	{
-		free(info->timestamps);
 		free(info);
 		return ;
 	}
@@ -25,7 +24,6 @@ static void	ft_create_mutexes(t_thread_info *info)
 	if (!info->death_mutex)
 	{
 		free(info->display_mutex);
-		free(info->timestamps);
 		free(info);
 		return ;
 	}
@@ -42,12 +40,6 @@ t_thread_info	*ft_create_info(void)
 	if (!info)
 		return (NULL);
 	ft_memset(info, 0, sizeof(t_thread_info));
-	info->timestamps = ft_calloc(1, sizeof(t_timestamps));
-	if (!info->timestamps)
-	{
-		free(info);
-		return (NULL);
-	}
 	info->nbr_philo_full = 0;
 	info->someone_died = 0;
 	ft_create_mutexes(info);

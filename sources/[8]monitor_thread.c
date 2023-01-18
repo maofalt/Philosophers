@@ -44,7 +44,7 @@ void	*monitor_philosophers(void *arg)
 				ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
-			if (ft_philo_starved(info->timestamps->start, node))
+			if (ft_philo_starved(node->timestamps->start, node))
 			{
 				ft_put_down_forks(node);
 				stop_philosophers(node);

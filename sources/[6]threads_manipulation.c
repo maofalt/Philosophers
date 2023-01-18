@@ -30,9 +30,11 @@ void	ft_create_threads(t_list_item *list)
 	while (current)
 	{
 		current->info = info;
-		ft_init_shared_time(current, start);
 		if (current->type == PHILOSOPHER)
+		{
+			ft_init_shared_time(current, start);
 			pthread_create(current->thread, NULL, philo_thread, current);
+		}
 		current = current->next;
 		if (current == list || current->args.number_of_philosophers == 1)
 			break ;
@@ -42,6 +44,6 @@ void	ft_create_threads(t_list_item *list)
 
 void	ft_init_shared_time(t_list_item *current, struct timeval start)
 {
-	current->info->timestamps->start = start;
-	current->info->timestamps->start_last_meal = start;
+	current->timestamps->start = start;
+	current->timestamps->start_last_meal = start;
 }

@@ -50,6 +50,7 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 	item->args = a;
 	item->type = type;
 	item->number = nb;
+	item->timestamps = NULL;
 	if (ft_philo_allocation(item, type, state) == 0)
 		return (NULL);
 	else if (type == FORK)
@@ -68,6 +69,12 @@ int	ft_philo_allocation(t_list_item *item, t_item_type type, t_state state)
 		if (item->thread == NULL)
 			return (free(item), 0);
 		item->state = state;
+		item->timestamps = ft_calloc(1, sizeof(t_timestamps));
+		if (item->timestamps == NULL)
+		{
+			free(item->thread);
+			return (free(item), 0);
+		}
 	}
 	return (1);
 }

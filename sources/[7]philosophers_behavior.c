@@ -23,23 +23,23 @@ void	*philo_thread(void *arg)
 	{
 		if (philosopher->state == SLEEPING)
 		{
-			ft_display_status(philosopher->info->timestamps->start, philosopher);
+			ft_display_status(philosopher->timestamps->start, philosopher);
 			usleep(philosopher->args.time_to_sleep * 1000);
 			philosopher->state += 1;
 		}
 		if (philosopher->state == THINKING)
 		{
-			ft_display_status(philosopher->info->timestamps->start, philosopher);
+			ft_display_status(philosopher->timestamps->start, philosopher);
 			philosopher->state += 1;
 		}
 		if (philosopher->state == HUNGRY)
 		{
-			if (!ft_try_eat(philosopher->info->timestamps->start, philosopher))
+			if (!ft_try_eat(philosopher->timestamps->start, philosopher))
 			{
 				while (!ft_stop_signal(philosopher))
 					usleep(500);
 			}
-			ft_display_status(philosopher->info->timestamps->start, philosopher);
+			ft_display_status(philosopher->timestamps->start, philosopher);
 			usleep(philosopher->args.time_to_eat * 1000);
 			ft_put_down_forks(philosopher);
 			philosopher->state = SLEEPING;
@@ -61,9 +61,9 @@ void	ft_display_status(struct timeval start, t_list_item *philo)
 	int				i;
 
 	info = philo->info;
-	pthread_mutex_lock(info->display_mutex);
 	gettimeofday(&current, NULL);
-	info->timestamps->current = current;
+	pthread_mutex_lock(info->display_mutex);
+	philo->timestamps->current = current;
 	timestamp = (current.tv_sec - start.tv_sec) * 1000
 		+ (current.tv_usec - start.tv_usec) / 1000;
 	i = philo->number;
@@ -87,10 +87,8 @@ int	ft_try_eat(struct timeval start, t_list_item *philo)
 {
 	t_list_item		*left_fork;
 	t_list_item		*right_fork;
-	t_thread_info	*info;
 	struct timeval	current;
 
-	info = philo->info;
 	left_fork = NULL;
 	right_fork = NULL;
 	if (philo->prev != NULL)
@@ -113,7 +111,7 @@ int	ft_try_eat(struct timeval start, t_list_item *philo)
 	if (philo->state != EATING)
 		return (0);
 	gettimeofday(&current, NULL);
-	info->timestamps->start_last_meal = current;
+	philo->timestamps->start_last_meal = current;
 	return (1);
 }
 
@@ -133,8 +131,8 @@ void	ft_put_down_forks(t_list_item *philo)
 	if (right_fork)
 		pthread_mutex_unlock(&right_fork->mutex);
 	gettimeofday(&current, NULL);
-	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->start_last_meal.tv_sec) * 1000
-		+ (current.tv_usec - info->timestamps->start_last_meal.tv_usec) / 1000;
+	philo->timestamps->delta_last_meal = (current.tv_sec - philo->timestamps->start_last_meal.tv_sec) * 1000
+		+ (current.tv_usec - philo->timestamps->start_last_meal.tv_usec) / 1000;
 	info->times_eaten++;
 	if (info->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
 		info->nbr_philo_full += 1;
@@ -148,9 +146,9 @@ int	ft_philo_starved(struct timeval start, t_list_item *philo)
 
 	info = philo->info;
 	gettimeofday(&current, NULL);
-	info->timestamps->delta_last_meal = (current.tv_sec - info->timestamps->start_last_meal.tv_sec) * 1000
-		+ (current.tv_usec - info->timestamps->start_last_meal.tv_usec) / 1000;
-	start_last_meal = info->timestamps->delta_last_meal;
+	philo->timestamps->delta_last_meal = (current.tv_sec - philo->timestamps->start_last_meal.tv_sec) * 1000
+		+ (current.tv_usec - philo->timestamps->start_last_meal.tv_usec) / 1000;
+	start_last_meal = philo->timestamps->delta_last_meal;
 	if (start_last_meal >= philo->args.time_to_die && philo->state != EATING)
 	{
 		philo->state = DEAD;
@@ -189,7 +187,7 @@ int	ft_stop_signal(t_list_item *philo)
 		ft_put_down_forks(philo);
 		pthread_exit(0);
 	}
-	if (ft_philo_starved(info->timestamps->start, philo))
+	if (ft_philo_starved(philo->timestamps->start, philo))
 	{
 		ft_put_down_forks(philo);
 		pthread_exit(0);
