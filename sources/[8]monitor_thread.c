@@ -61,6 +61,7 @@ void	stop_philosophers(t_list_item *philo)
 	int				i;
 
 	i = 0;
+	pthread_mutex_lock(philo->info->display_mutex);
 	while (philo)
 	{
 		if (philo->type == PHILOSOPHER)
@@ -72,5 +73,6 @@ void	stop_philosophers(t_list_item *philo)
 			break ;
 		philo = philo->next;
 	}
+	pthread_mutex_unlock(philo->info->display_mutex);
 	pthread_exit(0);
 }

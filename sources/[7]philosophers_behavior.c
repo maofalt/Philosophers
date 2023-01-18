@@ -24,7 +24,8 @@ void	*philo_thread(void *arg)
 		if (philosopher->state == SLEEPING)
 		{
 			ft_display_status(philosopher->timestamps->start, philosopher);
-			usleep(philosopher->args.time_to_sleep * 1000);
+			//usleep(philosopher->args.time_to_sleep * 1000);
+			ft_usleep(philosopher->args.time_to_sleep);
 			philosopher->state = THINKING;
 			continue ;
 		}
@@ -41,7 +42,8 @@ void	*philo_thread(void *arg)
 				continue ;
 			}
 			ft_display_status(philosopher->timestamps->start, philosopher);
-			usleep(philosopher->args.time_to_eat * 1000);
+			//usleep(philosopher->args.time_to_eat * 1000);
+			ft_usleep(philosopher->args.time_to_eat);
 			ft_put_down_forks(philosopher);
 			philosopher->state = SLEEPING;
 		}
@@ -62,24 +64,31 @@ void	ft_display_status(struct timeval start, t_list_item *philo)
 	int				i;
 
 	info = philo->info;
-	gettimeofday(&current, NULL);
 	pthread_mutex_lock(info->display_mutex);
+	gettimeofday(&current, NULL);
 	philo->timestamps->current = current;
 	timestamp = (current.tv_sec - start.tv_sec) * 1000
 		+ (current.tv_usec - start.tv_usec) / 1000;
 	i = philo->number;
-	if (philo->state == THINKING)
-		ft_printf("%d %d is thinking\n", timestamp, i);
-	else if (philo->state == FORKING)
-		ft_printf("%d %d has taken a fork\n", timestamp, i);
-	else if (philo->state == EATING)
-		ft_printf("%d %d is eating\n", timestamp, i);
-	else if (philo->state == SLEEPING)
-		ft_printf("%d %d is sleeping\n", timestamp, i);
-	else if (philo->state == DEAD)
+	pthread_mutex_lock(info->death_mutex);
+	if (!info->someone_died)
+	{
+		if (philo->state == THINKING)
+			ft_printf("%d %d is thinking\n", timestamp, i);
+		else if (philo->state == FORKING)
+			ft_printf("%d %d has taken a fork\n", timestamp, i);
+		else if (philo->state == EATING)
+			ft_printf("%d %d is eating\n", timestamp, i);
+		else if (philo->state == SLEEPING)
+			ft_printf("%d %d is sleeping\n", timestamp, i);
+		else if (philo->state == DEAD)
+			ft_printf("%d %d died\n", timestamp, i);
+		else if (philo->state > END)
+			ft_printf("ERROR: Philosopher %d has an invalid state\n", i);
+	}
+	if (philo->state == DEAD && info->someone_died == 1)
 		ft_printf("%d %d died\n", timestamp, i);
-	else if (philo->state > END)
-		ft_printf("ERROR: Philosopher %d has an invalid state\n", i);
+	pthread_mutex_unlock(info->death_mutex);
 	pthread_mutex_unlock(info->display_mutex);
 }
 
@@ -152,12 +161,12 @@ int	ft_philo_starved(struct timeval start, t_list_item *philo)
 	start_last_meal = philo->timestamps->delta_last_meal;
 	if (start_last_meal >= philo->args.time_to_die && philo->state != EATING)
 	{
-		philo->state = DEAD;
 		pthread_mutex_lock(info->death_mutex);
+		philo->state = DEAD;
 			info->someone_died += 1;
-		if (info->someone_died == 1)
-			ft_display_status(start, philo);
 		pthread_mutex_unlock(info->death_mutex);
+		if (philo->state == DEAD)
+			ft_display_status(start, philo);
 		return (1);
 	}
 	return (0);
@@ -180,23 +189,36 @@ int	ft_stop_signal(t_list_item *philo)
 			pthread_exit(0);
 		}
 	}
-	pthread_mutex_lock(info->death_mutex);
+	pthread_mutex_lock(info->display_mutex);
 	if (info->someone_died >= 1)
 	{
-		pthread_mutex_unlock(info->death_mutex);
+		pthread_mutex_unlock(info->display_mutex);
 		ft_put_down_forks(philo);
 		pthread_exit(0);
 	}
-	pthread_mutex_unlock(info->death_mutex);
-	if (info->nbr_philo_full >= args.number_of_philosophers)
-	{
-		ft_put_down_forks(philo);
-		pthread_exit(0);
-	}
+	pthread_mutex_unlock(info->display_mutex);
 	if (ft_philo_starved(philo->timestamps->start, philo))
 	{
 		ft_put_down_forks(philo);
 		pthread_exit(0);
 	}
 	return (0);
+}
+
+//createown usleep with  gettimeofday function
+extern inline void	ft_usleep(long int time_in_ms)
+{
+	struct timeval	start;
+	struct timeval	current;
+	long int		delta;
+
+	gettimeofday(&start, NULL);
+	delta = 0;
+	while (delta < time_in_ms)
+	{
+		gettimeofday(&current, NULL);
+		delta = (current.tv_sec - start.tv_sec) * 1000
+			+ (current.tv_usec - start.tv_usec) / 1000;
+		usleep(100);
+	}
 }

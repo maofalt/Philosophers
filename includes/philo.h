@@ -91,68 +91,69 @@ typedef struct s_list_item {
 /*                           VALID_ARGUMENTS							      */
 /*############################################################################*/
 
-int				ft_valid_arguments(int argc, char **argv);
+int					ft_valid_arguments(int argc, char **argv);
 
 /*############################################################################*/
 /*                           PARSE_ARGUMENTS							      */
 /*############################################################################*/
 
-t_arguments		*ft_parse_arguments(int argc, char **argv);
+t_arguments			*ft_parse_arguments(int argc, char **argv);
 
 /*############################################################################*/
 /*                           LIST_MANIPULATION							      */
 /*############################################################################*/
 
-t_list_item		*ft_create_list(t_arguments *args);
-void			link_items(t_list_item *prev, t_list_item *next);
-void			ft_print_list(t_list_item *first);
-void			free_list(t_list_item *first);
+t_list_item			*ft_create_list(t_arguments *args);
+void				link_items(t_list_item *prev, t_list_item *next);
+void				ft_print_list(t_list_item *first);
+void				free_list(t_list_item *first);
 
 /*############################################################################*/
 /*                           ITEM  CONSTRUCTOR							      */
 /*############################################################################*/
-t_list_item		*create_item(t_item_type type, t_state state,
-					t_arguments a, int nb);
-int				ft_init_first_philo_fork(t_list_item **first,
-					t_list_item **fork, t_arguments *args);
-int				ft_create_philo(t_list_item **philosopher, t_arguments *args,
-					int i, t_list_item **first);
-int				ft_create_fork(t_list_item **fork, t_arguments *args, int i,
-					t_list_item **first);
-int				ft_philo_allocation(t_list_item *item, t_item_type type,
-					t_state state);
-t_state			ft_decide_state(t_item_type type, t_arguments a, int nb);
+t_list_item			*create_item(t_item_type type, t_state state,
+						t_arguments a, int nb);
+int					ft_init_first_philo_fork(t_list_item **first,
+						t_list_item **fork, t_arguments *args);
+int					ft_create_philo(t_list_item **philosopher, t_arguments *args,
+						int i, t_list_item **first);
+int					ft_create_fork(t_list_item **fork, t_arguments *args, int i,
+						t_list_item **first);
+int					ft_philo_allocation(t_list_item *item, t_item_type type,
+						t_state state);
+t_state				ft_decide_state(t_item_type type, t_arguments a, int nb);
 
 /*############################################################################*/
 /*                    INFO STRUCT MANIPULATION							      */
 /*############################################################################*/
 
-t_thread_info	*ft_create_info(void);
+t_thread_info		*ft_create_info(void);
 
 /*############################################################################*/
 /*                           THREADS_MANIPULATION							  */
 /*############################################################################*/
 
-void			ft_create_threads(t_list_item *list);
-void			ft_init_shared_time(t_list_item *current, struct timeval start);
-void			ft_init_shared_info(t_list_item *current, int *nbr_philo_full,
-					int *someone_died);
+void				ft_create_threads(t_list_item *list);
+void				ft_init_shared_time(t_list_item *current, struct timeval start);
+void				ft_init_shared_info(t_list_item *current, int *nbr_philo_full,
+						int *someone_died);
 
 /*############################################################################*/
 /*                           PHILOSOPHERS BEHAVIOR							  */
 /*############################################################################*/
 
-void			*philo_thread(void *arg);
-void			ft_display_status(struct timeval start, t_list_item *philo);
-int				ft_try_eat(struct timeval start, t_list_item *philo);
-void			ft_put_down_forks(t_list_item *philo);
-int				ft_philo_starved(struct timeval start, t_list_item *philo);
-int				ft_stop_signal(t_list_item *philo);
+void				*philo_thread(void *arg);
+void				ft_display_status(struct timeval start, t_list_item *philo);
+int					ft_try_eat(struct timeval start, t_list_item *philo);
+void				ft_put_down_forks(t_list_item *philo);
+int					ft_philo_starved(struct timeval start, t_list_item *philo);
+int					ft_stop_signal(t_list_item *philo);
+extern inline void	ft_usleep(long int time_in_ms);
 
 /*############################################################################*/
 /*                           MONITOR	BEHAVIOR							  */
 /*############################################################################*/
-void			*monitor_philosophers(void *arg);
-void			stop_philosophers(t_list_item *phlo);
+void				*monitor_philosophers(void *arg);
+void				stop_philosophers(t_list_item *phlo);
 
 #endif
