@@ -97,37 +97,19 @@ int	ft_try_eat(struct timeval start, t_list_item *philo)
 		left_fork = philo->prev;
 	if (philo->next != NULL)
 		right_fork = philo->next;
-	if (philo->number % 2 == 0)
+	philo->state = FORKING;
+	if (left_fork)
 	{
-		philo->state = FORKING;
-		if (right_fork)
-		{
-			pthread_mutex_lock(&right_fork->mutex);
-			ft_display_status(start, philo);
-		}
-		if (left_fork)
-		{
-			pthread_mutex_lock(&left_fork->mutex);
-			ft_display_status(start, philo);
-		}
+		pthread_mutex_lock(&left_fork->mutex);
+		ft_display_status(start, philo);
+	}
+	if (right_fork)
+	{
+		pthread_mutex_lock(&right_fork->mutex);
+		ft_display_status(start, philo);
+	}
+	if (left_fork && right_fork)
 		philo->state = EATING;
-	}
-	else
-	{
-		philo->state = FORKING;
-		if (left_fork)
-		{
-			pthread_mutex_lock(&left_fork->mutex);
-			ft_display_status(start, philo);
-		}
-		if (right_fork)
-		{
-			pthread_mutex_lock(&right_fork->mutex);
-			ft_display_status(start, philo);
-		}
-		if (left_fork && right_fork)
-			philo->state = EATING;
-	}
 	if (philo->state != EATING)
 		return (0);
 	gettimeofday(&current, NULL);
