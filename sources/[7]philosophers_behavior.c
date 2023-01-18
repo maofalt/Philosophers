@@ -25,19 +25,20 @@ void	*philo_thread(void *arg)
 		{
 			ft_display_status(philosopher->timestamps->start, philosopher);
 			usleep(philosopher->args.time_to_sleep * 1000);
-			philosopher->state += 1;
+			philosopher->state = THINKING;
+			continue ;
 		}
 		if (philosopher->state == THINKING)
 		{
 			ft_display_status(philosopher->timestamps->start, philosopher);
-			philosopher->state += 1;
+			philosopher->state = HUNGRY;
+			continue ;
 		}
 		if (philosopher->state == HUNGRY)
 		{
 			if (!ft_try_eat(philosopher->timestamps->start, philosopher))
 			{
-				while (!ft_stop_signal(philosopher))
-					usleep(500);
+				continue ;
 			}
 			ft_display_status(philosopher->timestamps->start, philosopher);
 			usleep(philosopher->args.time_to_eat * 1000);
@@ -77,7 +78,7 @@ void	ft_display_status(struct timeval start, t_list_item *philo)
 		ft_printf("%d %d is sleeping\n", timestamp, i);
 	else if (philo->state == DEAD)
 		ft_printf("%d %d died\n", timestamp, i);
-	else
+	else if (philo->state > END)
 		ft_printf("ERROR: Philosopher %d has an invalid state\n", i);
 	pthread_mutex_unlock(info->display_mutex);
 }
@@ -96,17 +97,17 @@ int	ft_try_eat(struct timeval start, t_list_item *philo)
 	if (philo->next != NULL)
 		right_fork = philo->next;
 	philo->state = FORKING;
-	if (left_fork)
+	if (left_fork && !ft_stop_signal(philo))
 	{
 		pthread_mutex_lock(&left_fork->mutex);
 		ft_display_status(start, philo);
 	}
-	if (right_fork)
+	if (right_fork && !ft_stop_signal(philo))
 	{
 		pthread_mutex_lock(&right_fork->mutex);
 		ft_display_status(start, philo);
 	}
-	if (left_fork && right_fork)
+	if (left_fork && right_fork && !ft_stop_signal(philo))
 		philo->state = EATING;
 	if (philo->state != EATING)
 		return (0);
@@ -177,11 +178,14 @@ int	ft_stop_signal(t_list_item *philo)
 			pthread_exit(0);
 		}
 	}
+	pthread_mutex_lock(info->death_mutex);
 	if (info->someone_died >= 1)
 	{
+		pthread_mutex_unlock(info->death_mutex);
 		ft_put_down_forks(philo);
 		pthread_exit(0);
 	}
+	pthread_mutex_unlock(info->death_mutex);
 	if (info->nbr_philo_full >= args.number_of_philosophers)
 	{
 		ft_put_down_forks(philo);

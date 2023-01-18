@@ -34,11 +34,14 @@ void	*monitor_philosophers(void *arg)
 					stop_philosophers(node);
 				}
 			}
+			pthread_mutex_lock(info->death_mutex);
 			if (info->someone_died >= 1)
 			{
+				pthread_mutex_unlock(info->death_mutex);
 				ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
+			pthread_mutex_unlock(info->death_mutex);
 			if (info->nbr_philo_full >= args.number_of_philosophers)
 			{
 				ft_put_down_forks(node);
