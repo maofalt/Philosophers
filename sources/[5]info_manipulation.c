@@ -34,24 +34,24 @@ static void	ft_create_mutexes(t_thread_info *info)
 }
 
 // A function that creates the linked list of philosophers and forks
-void	ft_create_info(t_list_item *list)
+t_thread_info	*ft_create_info(void)
 {
 	t_thread_info	*info;
 
 	info = malloc(sizeof(t_thread_info));
 	if (!info)
-		return ;
+		return (NULL);
 	ft_memset(info, 0, sizeof(t_thread_info));
 	info->timestamps = ft_calloc(1, sizeof(t_timestamps));
 	if (!info->timestamps)
 	{
 		free(info);
-		return ;
+		return (NULL);
 	}
 	info->nbr_philo_full = 0;
 	info->someone_died = 0;
 	ft_create_mutexes(info);
 	if (!info->display_mutex || !info->death_mutex)
-		return ;
-	list->info = info;
+		return (NULL);
+	return (info);
 }

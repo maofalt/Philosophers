@@ -54,14 +54,7 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 		pthread_mutex_init(&item->mutex, NULL);
 	item->prev = NULL;
 	item->next = NULL;
-	ft_create_info(item);
-	if (item->info == NULL)
-	{
-		if (type == FORK)
-			pthread_mutex_destroy(&item->mutex);
-		free(item->thread);
-		return (free(item), NULL);
-	}
+	item->info = NULL;
 	return (item);
 }
 

@@ -27,27 +27,27 @@ void	*monitor_philosophers(void *arg)
 			args = node->args;
 			if (args.number_of_times_each_philosopher_must_eat > 0)
 			{
-				if (*info->nbr_philo_full >= node->args.number_of_philosophers)
+				if (info->nbr_philo_full >= node->args.number_of_philosophers)
 				{
 					ft_put_down_forks(node);
 					stop_philosophers(node);
 				}
 			}
-			if (*info->someone_died >= 1)
+			if (info->someone_died >= 1)
 			{
 				ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
-			if (*info->nbr_philo_full >= args.number_of_philosophers)
+			if (info->nbr_philo_full >= args.number_of_philosophers)
 			{
 				ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
-			// if (ft_philo_starved(info->timestamps->start, node))
-			// {
-			// 	ft_put_down_forks(node);
-			// 	stop_philosophers(node);
-			// }
+			if (ft_philo_starved(info->timestamps->start, node))
+			{
+				ft_put_down_forks(node);
+				stop_philosophers(node);
+			}
 		}
 		if (node->args.number_of_philosophers > 1)
 			node = node->next;
@@ -57,10 +57,8 @@ void	*monitor_philosophers(void *arg)
 
 void	stop_philosophers(t_list_item *philo)
 {
-	t_thread_info	*info;
 	int				i;
 
-	info = philo->info;
 	i = 0;
 	while (philo)
 	{

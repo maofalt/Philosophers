@@ -207,7 +207,7 @@ void	ft_put_down_forks(t_list_item *philo)
 		+ (current.tv_usec - info->timestamps->start_last_meal.tv_usec) / 1000;
 	info->times_eaten++;
 	if (info->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
-		*info->nbr_philo_full += 1;
+		info->nbr_philo_full += 1;
 }
 
 int	ft_philo_starved(struct timeval start, t_list_item *philo)
@@ -225,8 +225,8 @@ int	ft_philo_starved(struct timeval start, t_list_item *philo)
 	{
 		philo->state = DEAD;
 		pthread_mutex_lock(info->death_mutex);
-			*info->someone_died += 1;
-		if (*info->someone_died == 1)
+			info->someone_died += 1;
+		if (info->someone_died == 1)
 			ft_display_status(start, philo);
 		pthread_mutex_unlock(info->death_mutex);
 		return (1);
@@ -243,18 +243,18 @@ int	ft_stop_signal(t_list_item *philo)
 	args = philo->args;
 	if (args.number_of_times_each_philosopher_must_eat > 0)
 	{
-		if (*info->nbr_philo_full >= philo->args.number_of_philosophers)
+		if (info->nbr_philo_full >= philo->args.number_of_philosophers)
 		{
 			ft_put_down_forks(philo);
 			pthread_exit(0);
 		}
 	}
-	if (*info->someone_died >= 1)
+	if (info->someone_died >= 1)
 	{
 		ft_put_down_forks(philo);
 		pthread_exit(0);
 	}
-	if (*info->nbr_philo_full >= args.number_of_philosophers)
+	if (info->nbr_philo_full >= args.number_of_philosophers)
 	{
 		ft_put_down_forks(philo);
 		pthread_exit(0);

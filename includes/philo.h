@@ -69,8 +69,8 @@ typedef enum e_item_type {
 typedef struct s_thread_info {
 	t_timestamps	*timestamps;
 	int				times_eaten;
-	int				*nbr_philo_full;
-	int				*someone_died;
+	int				nbr_philo_full;
+	int				someone_died;
 	pthread_mutex_t	*display_mutex;
 	pthread_mutex_t	*death_mutex;
 }					t_thread_info;
@@ -126,7 +126,7 @@ int				ft_philo_allocation(t_list_item *item, t_item_type type,
 /*                    INFO STRUCT MANIPULATION							      */
 /*############################################################################*/
 
-void			ft_create_info(t_list_item *list);
+t_thread_info	*ft_create_info(void);
 
 /*############################################################################*/
 /*                           THREADS_MANIPULATION							  */

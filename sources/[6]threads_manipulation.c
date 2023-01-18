@@ -16,21 +16,21 @@ void	ft_create_threads(t_list_item *list)
 {
 	t_list_item		*current;
 	struct timeval	start;
-	int				nbr_philo_full;
-	int				someone_died;
+	t_thread_info	*info;
 	pthread_t		*monitor_thread;
 
+	info = ft_create_info();
+	if (!info)
+		return ;
 	monitor_thread = malloc(sizeof(pthread_t));
 	if (!monitor_thread)
 		return ;
-	nbr_philo_full = 0;
-	someone_died = 0;
 	current = list;
 	gettimeofday(&start, NULL);
 	while (current)
 	{
+		current->info = info;
 		ft_init_shared_time(current, start);
-		ft_init_shared_info(current, &nbr_philo_full, &someone_died);
 		if (current->type == PHILOSOPHER)
 			pthread_create(current->thread, NULL, philo_thread, current);
 		current = current->next;
@@ -44,11 +44,4 @@ void	ft_init_shared_time(t_list_item *current, struct timeval start)
 {
 	current->info->timestamps->start = start;
 	current->info->timestamps->start_last_meal = start;
-}
-
-void	ft_init_shared_info(t_list_item *current, int *nbr_philo_full,
-	int *someone_died)
-{
-	current->info->nbr_philo_full = nbr_philo_full;
-	current->info->someone_died = someone_died;
 }
