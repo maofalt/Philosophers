@@ -111,7 +111,6 @@ void	free_list(t_list_item *first)
 	{
 		if (item->type == PHILOSOPHER)
 		{
-			pthread_join(*item->thread, NULL);
 			free(item->thread);
 			free(item->timestamps);
 		}

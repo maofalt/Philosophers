@@ -138,6 +138,7 @@ void				ft_create_threads(t_list_item *list);
 void				ft_init_shared_time(t_list_item *current, struct timeval start);
 void				ft_init_shared_info(t_list_item *current, int *nbr_philo_full,
 						int *someone_died);
+void				ft_wait_threads(t_list_item *list);
 
 /*############################################################################*/
 /*                           PHILOSOPHERS BEHAVIOR							  */

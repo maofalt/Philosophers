@@ -31,7 +31,29 @@ int	main(int argc, char **argv)
 		return (free(args), 0);
 	ft_create_threads(list);
 	info = list->info;
+	ft_wait_threads(list);
 	free_list(list);
 	free_info(info);
 	free(args);
+}
+
+void	ft_wait_threads(t_list_item *list)
+{
+	t_list_item	*item;
+	int			i;
+	int			max;
+
+	item = list;
+	list = list->next;
+	i = 0;
+	max = item->args.number_of_philosophers * 2;
+	while (i++ < max)
+	{
+		if (item->type == PHILOSOPHER)
+		{
+			pthread_join(*item->thread, NULL);
+
+		}
+		item = item->next;
+	}
 }
