@@ -206,7 +206,7 @@ int	ft_stop_signal(t_list_item *philo)
 }
 
 //createown usleep with  gettimeofday function
-extern inline void	ft_usleep(long int time_in_ms)
+void	ft_usleep(long int time_in_ms)
 {
 	struct timeval	start;
 	struct timeval	current;

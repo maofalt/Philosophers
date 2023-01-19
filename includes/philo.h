@@ -148,7 +148,7 @@ int					ft_try_eat(struct timeval start, t_list_item *philo);
 void				ft_put_down_forks(t_list_item *philo);
 int					ft_philo_starved(struct timeval start, t_list_item *philo);
 int					ft_stop_signal(t_list_item *philo);
-extern inline void	ft_usleep(long int time_in_ms);
+void	ft_usleep(long int time_in_ms);
 
 /*############################################################################*/
 /*                           MONITOR	BEHAVIOR							  */
