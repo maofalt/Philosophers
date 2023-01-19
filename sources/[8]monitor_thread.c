@@ -29,27 +29,31 @@ void	*monitor_philosophers(void *arg)
 			if (args.number_of_times_each_philosopher_must_eat >= 0)
 			{
 				if (args.number_of_times_each_philosopher_must_eat == 0)
+				{
+					pthread_mutex_lock(info->death_mutex);
 					info->nbr_philo_full = node->args.number_of_philosophers;
+					pthread_mutex_unlock(info->death_mutex);
+				}
+				pthread_mutex_lock(info->death_mutex);
 				if (info->nbr_philo_full >= node->args.number_of_philosophers)
 				{
-					if (node->state == FORKING)
-						ft_put_down_forks(node);
+					pthread_mutex_unlock(info->death_mutex);	
+				//	ft_put_down_forks(node);
 					stop_philosophers(node);
 				}
+				pthread_mutex_unlock(info->death_mutex);	
 			}
 			pthread_mutex_lock(info->death_mutex);
-			if (info->someone_died >= 1)
+			if (info->someone_died == 1)
 			{
 				pthread_mutex_unlock(info->death_mutex);
-				if (node->state == FORKING)
-					ft_put_down_forks(node);
+				//ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
 			pthread_mutex_unlock(info->death_mutex);
 			if (ft_philo_starved(node->timestamps->start, node))
 			{
-				if (node->state == FORKING)
-					ft_put_down_forks(node);
+				//ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
 		}
@@ -61,21 +65,10 @@ void	*monitor_philosophers(void *arg)
 
 void	stop_philosophers(t_list_item *philo)
 {
-	int				i;
-
-	i = 0;
-	pthread_mutex_lock(philo->info->display_mutex);
-	while (philo)
-	{
-		if (philo->type == PHILOSOPHER)
-		{
-			philo->state = END;
-			i++;
-		}
-		if (i >= philo->args.number_of_philosophers)
-			break ;
-		philo = philo->next;
-	}
-	pthread_mutex_unlock(philo->info->display_mutex);
+	pthread_mutex_lock(philo->info->death_mutex);
+	philo->info->end = 1;
+	pthread_mutex_unlock(philo->info->death_mutex);
+	ft_wait_threads(philo);
 	pthread_exit(0);
 }
+

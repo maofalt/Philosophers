@@ -114,8 +114,10 @@ void	free_list(t_list_item *first)
 			free(item->thread);
 			free(item->timestamps);
 		}
-		else
+		else if (item->type == FORK)
+		{
 			pthread_mutex_destroy(&item->mutex);
+		}
 		prev = item;
 		item = item->next;
 		free(prev);

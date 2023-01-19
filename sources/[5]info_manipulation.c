@@ -42,6 +42,7 @@ t_thread_info	*ft_create_info(void)
 	ft_memset(info, 0, sizeof(t_thread_info));
 	info->nbr_philo_full = 0;
 	info->someone_died = 0;
+	info->end = 0;
 	ft_create_mutexes(info);
 	if (!info->display_mutex || !info->death_mutex)
 		return (NULL);

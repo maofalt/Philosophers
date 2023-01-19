@@ -69,6 +69,7 @@ typedef enum e_item_type {
 typedef struct s_thread_info {
 	int				nbr_philo_full;
 	int				someone_died;
+	int				end;
 	pthread_mutex_t	*display_mutex;
 	pthread_mutex_t	*death_mutex;
 }					t_thread_info;
@@ -78,6 +79,8 @@ typedef struct s_list_item {
 	t_item_type				type;
 	t_state					state;
 	int						number;
+	int						left_fork;
+	int						right_fork;
 	int						times_eaten;
 	struct s_list_item		*next;
 	struct s_list_item		*prev;
@@ -145,7 +148,7 @@ void				ft_wait_threads(t_list_item *list);
 /*############################################################################*/
 
 void				*philo_thread(void *arg);
-void				ft_display_status(struct timeval start, t_list_item *philo);
+void				ft_display_status(struct timeval start, t_list_item *philo, int fork);
 int					ft_try_eat(struct timeval start, t_list_item *philo);
 void				ft_put_down_forks(t_list_item *philo);
 int					ft_philo_starved(struct timeval start, t_list_item *philo);

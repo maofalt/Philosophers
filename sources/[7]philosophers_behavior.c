@@ -23,7 +23,7 @@ void	*philo_thread(void *arg)
 	{
 		if (philosopher->state == SLEEPING)
 		{
-			ft_display_status(philosopher->timestamps->start, philosopher);
+			ft_display_status(philosopher->timestamps->start, philosopher, 0);
 			//usleep(philosopher->args.time_to_sleep * 1000);
 			ft_usleep(philosopher->args.time_to_sleep);
 			philosopher->state = THINKING;
@@ -31,7 +31,7 @@ void	*philo_thread(void *arg)
 		}
 		if (philosopher->state == THINKING)
 		{
-			ft_display_status(philosopher->timestamps->start, philosopher);
+			ft_display_status(philosopher->timestamps->start, philosopher, 0);
 			philosopher->state = HUNGRY;
 			continue ;
 		}
@@ -39,9 +39,10 @@ void	*philo_thread(void *arg)
 		{
 			if (!ft_try_eat(philosopher->timestamps->start, philosopher))
 			{
+				philosopher->state = END;
 				continue ;
 			}
-			ft_display_status(philosopher->timestamps->start, philosopher);
+			ft_display_status(philosopher->timestamps->start, philosopher, 0);
 			//usleep(philosopher->args.time_to_eat * 1000);
 			ft_usleep(philosopher->args.time_to_eat);
 			ft_put_down_forks(philosopher);
@@ -50,13 +51,15 @@ void	*philo_thread(void *arg)
 		if (philosopher->state == DEAD)
 			break ;
 		if (philosopher->state == END)
+		{
 			pthread_exit(0);
+		}
 	}
 	pthread_exit(0);
 }
 
 // Function to display the current state of a philosopher
-void	ft_display_status(struct timeval start, t_list_item *philo)
+void	ft_display_status(struct timeval start, t_list_item *philo, int fork)
 {
 	struct timeval	current;
 	t_thread_info	*info;
@@ -70,25 +73,24 @@ void	ft_display_status(struct timeval start, t_list_item *philo)
 	timestamp = (current.tv_sec - start.tv_sec) * 1000
 		+ (current.tv_usec - start.tv_usec) / 1000;
 	i = philo->number;
-	pthread_mutex_lock(info->death_mutex);
-	if (!info->someone_died)
-	{
-		if (philo->state == THINKING)
-			ft_printf("%d %d is thinking\n", timestamp, i);
-		else if (philo->state == FORKING)
-			ft_printf("%d %d has taken a fork\n", timestamp, i);
-		else if (philo->state == EATING)
-			ft_printf("%d %d is eating\n", timestamp, i);
-		else if (philo->state == SLEEPING)
-			ft_printf("%d %d is sleeping\n", timestamp, i);
-		else if (philo->state == DEAD)
-			ft_printf("%d %d died\n", timestamp, i);
-		else if (philo->state > END)
-			ft_printf("ERROR: Philosopher %d has an invalid state\n", i);
-	}
-	if (philo->state == DEAD && info->someone_died == 1)
+	if (fork == 3)
 		ft_printf("%d %d died\n", timestamp, i);
-	pthread_mutex_unlock(info->death_mutex);
+	else if (philo->state == THINKING)
+		ft_printf("%d %d is thinking\n", timestamp, i);
+	else if (philo->state == FORKING)
+	{
+		if (fork == 0)
+			pthread_mutex_lock(&philo->prev->mutex);
+		else
+			pthread_mutex_lock(&philo->next->mutex);
+		ft_printf("%d %d has taken a fork\n", timestamp, i);
+	}
+	else if (philo->state == EATING)
+		ft_printf("%d %d is eating\n", timestamp, i);
+	else if (philo->state == SLEEPING)
+		ft_printf("%d %d is sleeping\n", timestamp, i);
+	else if (philo->state > END)
+		ft_printf("ERROR: Philosopher %d has an invalid state\n", i);
 	pthread_mutex_unlock(info->display_mutex);
 }
 
@@ -107,19 +109,17 @@ int	ft_try_eat(struct timeval start, t_list_item *philo)
 		right_fork = philo->next;
 	philo->state = FORKING;
 	if (left_fork && !ft_stop_signal(philo))
-	{
-		pthread_mutex_lock(&left_fork->mutex);
-		ft_display_status(start, philo);
-	}
+		ft_display_status(start, philo, 0);
 	if (right_fork && !ft_stop_signal(philo))
-	{
-		pthread_mutex_lock(&right_fork->mutex);
-		ft_display_status(start, philo);
-	}
+		ft_display_status(start, philo, 1);
 	if (left_fork && right_fork && !ft_stop_signal(philo))
 		philo->state = EATING;
 	if (philo->state != EATING)
+	{
+
+		pthread_mutex_unlock(philo->info->display_mutex);
 		return (0);
+	}
 	gettimeofday(&current, NULL);
 	philo->timestamps->start_last_meal = current;
 	return (1);
@@ -145,7 +145,11 @@ void	ft_put_down_forks(t_list_item *philo)
 		+ (current.tv_usec - philo->timestamps->start_last_meal.tv_usec) / 1000;
 	philo->times_eaten++;
 	if (philo->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
+	{
+		pthread_mutex_lock(info->death_mutex);
 		info->nbr_philo_full += 1;
+		pthread_mutex_unlock(info->death_mutex);
+	}
 }
 
 int	ft_philo_starved(struct timeval start, t_list_item *philo)
@@ -156,17 +160,14 @@ int	ft_philo_starved(struct timeval start, t_list_item *philo)
 
 	info = philo->info;
 	gettimeofday(&current, NULL);
-	philo->timestamps->delta_last_meal = (current.tv_sec - philo->timestamps->start_last_meal.tv_sec) * 1000
+	start_last_meal = (current.tv_sec - philo->timestamps->start_last_meal.tv_sec) * 1000
 		+ (current.tv_usec - philo->timestamps->start_last_meal.tv_usec) / 1000;
-	start_last_meal = philo->timestamps->delta_last_meal;
-	if (start_last_meal >= philo->args.time_to_die && philo->state != EATING)
+	if (start_last_meal >= philo->args.time_to_die)
 	{
 		pthread_mutex_lock(info->death_mutex);
-		philo->state = DEAD;
-			info->someone_died += 1;
+		info->someone_died += 1;
 		pthread_mutex_unlock(info->death_mutex);
-		if (philo->state == DEAD)
-			ft_display_status(start, philo);
+		ft_display_status(start, philo, 3);
 		return (1);
 	}
 	return (0);
@@ -182,23 +183,31 @@ int	ft_stop_signal(t_list_item *philo)
 	if (args.number_of_times_each_philosopher_must_eat >= 0)
 	{
 		if (args.number_of_times_each_philosopher_must_eat == 0)
+		{
+			pthread_mutex_lock(info->death_mutex);
 			info->nbr_philo_full = philo->args.number_of_philosophers;
+			pthread_mutex_unlock(info->death_mutex);
+		}
+		pthread_mutex_lock(info->death_mutex);
 		if (info->nbr_philo_full >= args.number_of_philosophers)
 		{
-			if (philo->state == FORKING)
+			pthread_mutex_unlock(info->death_mutex);
+			if (philo->left_fork || philo->right_fork)
 				ft_put_down_forks(philo);
 			pthread_exit(0);
 		}
+		pthread_mutex_unlock(info->death_mutex);
+
 	}
-	pthread_mutex_lock(info->display_mutex);
+	pthread_mutex_lock(info->death_mutex);
 	if (info->someone_died >= 1)
 	{
-		pthread_mutex_unlock(info->display_mutex);
+	pthread_mutex_unlock(info->death_mutex);
 		if (philo->state == FORKING)
 			ft_put_down_forks(philo);
 		pthread_exit(0);
 	}
-	pthread_mutex_unlock(info->display_mutex);
+	pthread_mutex_unlock(info->death_mutex);
 	if (ft_philo_starved(philo->timestamps->start, philo))
 	{
 		if (philo->state == FORKING)
