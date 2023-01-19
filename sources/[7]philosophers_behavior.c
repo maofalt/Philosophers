@@ -185,7 +185,8 @@ int	ft_stop_signal(t_list_item *philo)
 			info->nbr_philo_full = philo->args.number_of_philosophers;
 		if (info->nbr_philo_full >= args.number_of_philosophers)
 		{
-			ft_put_down_forks(philo);
+			if (philo->state == FORKING)
+				ft_put_down_forks(philo);
 			pthread_exit(0);
 		}
 	}
@@ -193,13 +194,15 @@ int	ft_stop_signal(t_list_item *philo)
 	if (info->someone_died >= 1)
 	{
 		pthread_mutex_unlock(info->display_mutex);
-		ft_put_down_forks(philo);
+		if (philo->state == FORKING)
+			ft_put_down_forks(philo);
 		pthread_exit(0);
 	}
 	pthread_mutex_unlock(info->display_mutex);
 	if (ft_philo_starved(philo->timestamps->start, philo))
 	{
-		ft_put_down_forks(philo);
+		if (philo->state == FORKING)
+			ft_put_down_forks(philo);
 		pthread_exit(0);
 	}
 	return (0);

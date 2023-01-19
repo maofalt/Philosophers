@@ -32,7 +32,8 @@ void	*monitor_philosophers(void *arg)
 					info->nbr_philo_full = node->args.number_of_philosophers;
 				if (info->nbr_philo_full >= node->args.number_of_philosophers)
 				{
-					ft_put_down_forks(node);
+					if (node->state == FORKING)
+						ft_put_down_forks(node);
 					stop_philosophers(node);
 				}
 			}
@@ -40,13 +41,15 @@ void	*monitor_philosophers(void *arg)
 			if (info->someone_died >= 1)
 			{
 				pthread_mutex_unlock(info->death_mutex);
-				ft_put_down_forks(node);
+				if (node->state == FORKING)
+					ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
 			pthread_mutex_unlock(info->death_mutex);
 			if (ft_philo_starved(node->timestamps->start, node))
 			{
-				ft_put_down_forks(node);
+				if (node->state == FORKING)
+					ft_put_down_forks(node);
 				stop_philosophers(node);
 			}
 		}
