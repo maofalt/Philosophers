@@ -14,8 +14,9 @@
 
 int	main(int argc, char **argv)
 {
-	t_arguments	*args;
-	t_list_item	*list;
+	t_arguments		*args;
+	t_list_item		*list;
+	t_thread_info	*info;
 
 	if (!ft_valid_arguments(argc, argv))
 	{
@@ -29,6 +30,8 @@ int	main(int argc, char **argv)
 	if (!list)
 		return (free(args), 0);
 	ft_create_threads(list);
+	info = list->info;
 	free_list(list);
+	free_info(info);
 	free(args);
 }

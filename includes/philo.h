@@ -128,6 +128,7 @@ t_state				ft_decide_state(t_item_type type, t_arguments a, int nb);
 /*############################################################################*/
 
 t_thread_info		*ft_create_info(void);
+void				free_info(t_thread_info *info);
 
 /*############################################################################*/
 /*                           THREADS_MANIPULATION							  */

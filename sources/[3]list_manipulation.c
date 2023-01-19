@@ -106,13 +106,14 @@ void	free_list(t_list_item *first)
 	item = first;
 	first = first->next;
 	i = 0;
-	max = item->args.number_of_philosophers;
+	max = item->args.number_of_philosophers * 2;
 	while (i++ < max)
 	{
 		if (item->type == PHILOSOPHER)
 		{
 			pthread_join(*item->thread, NULL);
 			free(item->thread);
+			free(item->timestamps);
 		}
 		else
 			pthread_mutex_destroy(&item->mutex);

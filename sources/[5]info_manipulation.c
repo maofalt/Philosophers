@@ -47,3 +47,18 @@ t_thread_info	*ft_create_info(void)
 		return (NULL);
 	return (info);
 }
+
+void	free_info(t_thread_info *info)
+{
+	if (info->display_mutex)
+	{
+		pthread_mutex_destroy(info->display_mutex);
+		free(info->display_mutex);
+	}
+	if (info->death_mutex)
+	{
+		pthread_mutex_destroy(info->death_mutex);
+		free(info->death_mutex);
+	}
+	free(info);
+}
