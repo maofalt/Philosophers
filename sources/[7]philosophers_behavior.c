@@ -13,19 +13,12 @@
 #include "philo.h"
 
 // A function that runs in a separate thread for each philosopher
-
-void	printf_mutex(t_list_item *philo, int state);
-void	grab_forks(t_list_item *philo);
-void	release_forks(t_list_item *philo);
-void	safe_sleep(t_list_item *philo, long int time_to_sleep);
-void	safe_grab(t_list_item *philo, t_list_item *fork);
-
 void	*philo_thread(void *arg)
 {
 	t_list_item		*philo;
 	t_thread_info	*info;
 
-	philo = (t_list_item *) arg;
+	philo = (t_list_item *)arg;
 	info = philo->info;
 	while (1)
 	{
@@ -58,13 +51,13 @@ void	safe_grab(t_list_item *philo, t_list_item *fork)
 {
 	while (1)
 	{
-		pthread_lock_mutex(&philo->info->death_mutex);
+		pthread_mutex_lock(philo->info->death_mutex);
 		if (philo->info->end == 1)
 		{
-			pthread_unlock_mutex(philo->info->death_mutex);
+			pthread_mutex_unlock(philo->info->death_mutex);
 			pthread_exit(0);
 		}
-		pthread_unlock_mutex(philo->info->death_mutex);
+		pthread_mutex_unlock(philo->info->death_mutex);
 		pthread_mutex_lock(&fork->mutex);
 		if (fork->fork == 0)
 		{
@@ -74,6 +67,7 @@ void	safe_grab(t_list_item *philo, t_list_item *fork)
 		}
 		pthread_mutex_unlock(&fork->mutex);
 		usleep(150);
+		check_starved(philo);
 	}
 }
 
@@ -101,14 +95,7 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 		gettimeofday(&current, NULL);
 		time_in_ms = (current.tv_sec - last_meal.tv_sec) * 1000
 			+ (current.tv_usec - last_meal.tv_usec) / 1000;
-		if (time_in_ms >= philo->args.time_to_die)
-		{
-			printf_mutex(philo, 4);
-			pthread_mutex_lock(philo->info->death_mutex);
-			philo->info->end = 1;
-			pthread_mutex_unlock(philo->info->death_mutex);
-			pthread_exit(0);
-		}
+		check_starved(philo);
 	}
 }
 
@@ -117,7 +104,7 @@ void	printf_mutex(t_list_item *philo, int state)
 	struct timeval	current;
 	t_thread_info	*info;
 	int				timestamp;
-	int	const		i = philo->number;
+	int const		i = philo->number;
 
 	info = philo->info;
 	pthread_mutex_lock(info->display_mutex);
@@ -187,6 +174,28 @@ void	release_forks(t_list_item *philo)
 		}
 	}
 }
+
+/* fonction that comnpares th current time with the last meal time and 
+** if it is greater than the time to die, it kills the philosopher*/
+void	check_starved(t_list_item *philo)
+{
+	struct timeval			current;
+	struct timeval const	last_meal = philo->timestamps->start_last_meal;
+	long int				time_in_ms;
+
+	gettimeofday(&current, NULL);
+	time_in_ms = (current.tv_sec - last_meal.tv_sec) * 1000
+		+ (current.tv_usec - last_meal.tv_usec) / 1000;
+	if (time_in_ms >= philo->args.time_to_die)
+	{
+		printf_mutex(philo, 4);
+		pthread_mutex_lock(philo->info->death_mutex);
+		philo->info->end = 1;
+		pthread_mutex_unlock(philo->info->death_mutex);
+		pthread_exit(0);
+	}
+}
+
 // void	*philo_thread(void *arg)
 // {
 // 	t_list_item		*philosopher;
@@ -366,12 +375,11 @@ int	ft_stop_signal(t_list_item *philo)
 			pthread_exit(0);
 		}
 		pthread_mutex_unlock(info->death_mutex);
-
 	}
 	pthread_mutex_lock(info->death_mutex);
 	if (info->someone_died >= 1)
 	{
-	pthread_mutex_unlock(info->death_mutex);
+		pthread_mutex_unlock(info->death_mutex);
 		if (philo->state == FORKING)
 			ft_put_down_forks(philo);
 		pthread_exit(0);

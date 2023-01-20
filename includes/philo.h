@@ -15,12 +15,12 @@
 
 # include "../gnl/get_next_line.h"
 # include "libft.h"
-
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
 # include <unistd.h>
+
 /*############################################################################*/
 /*                              STRUCTURES                                    */
 /*############################################################################*/
@@ -152,12 +152,22 @@ int					ft_try_eat(struct timeval start, t_list_item *philo);
 void				ft_put_down_forks(t_list_item *philo);
 int					ft_philo_starved(struct timeval start, t_list_item *philo);
 int					ft_stop_signal(t_list_item *philo);
-void	ft_usleep(long int time_in_ms);
+void				ft_usleep(long int time_in_ms);
 
 /*############################################################################*/
 /*                           MONITOR	BEHAVIOR							  */
 /*############################################################################*/
 void				*monitor_philosophers(void *arg);
 void				stop_philosophers(t_list_item *phlo);
+
+/*############################################################################*/
+/*                          NEW PHILO BEHAVIOR  							  */
+/*############################################################################*/
+void				printf_mutex(t_list_item *philo, int state);
+void				grab_forks(t_list_item *philo);
+void				release_forks(t_list_item *philo);
+void				safe_sleep(t_list_item *philo, long int time_to_sleep);
+void				safe_grab(t_list_item *philo, t_list_item *fork);
+void				check_starved(t_list_item *philo);
 
 #endif
