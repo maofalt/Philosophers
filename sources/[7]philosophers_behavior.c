@@ -17,6 +17,7 @@
 void	printf_mutex(t_list_item *philo, int state);
 void	grab_forks(t_list_item *philo);
 void	release_forks(t_list_item *philo);
+void	safe_sleep(t_list_item *philo, long int time_to_sleep);
 
 void	*philo_thread(void *arg)
 {
@@ -34,7 +35,8 @@ void	*philo_thread(void *arg)
 		if (philo->state == SLEEPING)
 		{
 			printf_mutex(philo, 2);
-			ft_usleep(philo->args.time_to_sleep);
+			//ft_usleep(philo->args.time_to_sleep);
+			safe_sleep(philo, philo->args.time_to_sleep);
 			philo->state++;
 		}
 		if (philo->state == THINKING)
@@ -45,10 +47,46 @@ void	*philo_thread(void *arg)
 		grab_forks(philo);
 		gettimeofday(&philo->timestamps->start_last_meal, NULL);
 		printf_mutex(philo, 1);
-		ft_usleep(philo->args.time_to_eat);
+		//ft_usleep(philo->args.time_to_eat);
+		safe_sleep(philo, philo->args.time_to_eat);
 		release_forks(philo);
 	}
 	pthread_exit(0);
+}
+
+//a function tha splits the sleep function into smaller ones so we can check if he died of starvation or if another philospher die
+void	safe_sleep(t_list_item *philo, long int time_to_sleep)
+{
+	long int				time_in_ms;
+	struct timeval			current;
+	struct timeval const	last_meal = philo->timestamps->start_last_meal;
+
+	gettimeofday(&current, NULL);
+	time_in_ms = (current.tv_sec - last_meal.tv_sec) * 1000
+		+ (current.tv_usec - last_meal.tv_usec) / 1000;
+	while (time_in_ms < time_to_sleep)
+	{
+		ft_usleep(1);
+		time_in_ms += 5;
+		pthread_mutex_lock(philo->info->death_mutex);
+		if (philo->info->end == 1)
+		{
+			pthread_mutex_unlock(philo->info->death_mutex);
+			pthread_exit(0);
+		}
+		pthread_mutex_unlock(philo->info->death_mutex);
+		gettimeofday(&current, NULL);
+		time_in_ms = (current.tv_sec - last_meal.tv_sec) * 1000
+			+ (current.tv_usec - last_meal.tv_usec) / 1000;
+		if (time_in_ms >= philo->args.time_to_die)
+		{
+			printf_mutex(philo, 4);
+			pthread_mutex_lock(philo->info->death_mutex);
+			philo->info->end = 1;
+			pthread_mutex_unlock(philo->info->death_mutex);
+			pthread_exit(0);
+		}
+	}
 }
 
 void	printf_mutex(t_list_item *philo, int state)
