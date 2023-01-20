@@ -18,6 +18,7 @@ void	printf_mutex(t_list_item *philo, int state);
 void	grab_forks(t_list_item *philo);
 void	release_forks(t_list_item *philo);
 void	safe_sleep(t_list_item *philo, long int time_to_sleep);
+void	safe_grab(t_list_item *philo, t_list_item *fork);
 
 void	*philo_thread(void *arg)
 {
@@ -35,7 +36,6 @@ void	*philo_thread(void *arg)
 		if (philo->state == SLEEPING)
 		{
 			printf_mutex(philo, 2);
-			//ft_usleep(philo->args.time_to_sleep);
 			safe_sleep(philo, philo->args.time_to_sleep);
 			philo->state++;
 		}
@@ -47,11 +47,34 @@ void	*philo_thread(void *arg)
 		grab_forks(philo);
 		gettimeofday(&philo->timestamps->start_last_meal, NULL);
 		printf_mutex(philo, 1);
-		//ft_usleep(philo->args.time_to_eat);
 		safe_sleep(philo, philo->args.time_to_eat);
 		release_forks(philo);
 	}
 	pthread_exit(0);
+}
+
+//function that thinks safely, check the  fork variable on the forks and if it's 0, it means that the fork is free and it can take it
+void	safe_grab(t_list_item *philo, t_list_item *fork)
+{
+	while (1)
+	{
+		pthread_lock_mutex(&philo->info->death_mutex);
+		if (philo->info->end == 1)
+		{
+			pthread_unlock_mutex(philo->info->death_mutex);
+			pthread_exit(0);
+		}
+		pthread_unlock_mutex(philo->info->death_mutex);
+		pthread_mutex_lock(&fork->mutex);
+		if (fork->fork == 0)
+		{
+			fork->fork = 1;
+			pthread_mutex_unlock(&fork->mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&fork->mutex);
+		usleep(150);
+	}
 }
 
 //a function tha splits the sleep function into smaller ones so we can check if he died of starvation or if another philospher die
@@ -339,8 +362,7 @@ int	ft_stop_signal(t_list_item *philo)
 		if (info->nbr_philo_full >= args.number_of_philosophers)
 		{
 			pthread_mutex_unlock(info->death_mutex);
-			if (philo->left_fork || philo->right_fork)
-				ft_put_down_forks(philo);
+			ft_put_down_forks(philo);
 			pthread_exit(0);
 		}
 		pthread_mutex_unlock(info->death_mutex);

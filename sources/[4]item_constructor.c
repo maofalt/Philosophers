@@ -56,8 +56,7 @@ t_list_item	*create_item(t_item_type type, t_state state, t_arguments a, int nb)
 		return (NULL);
 	else if (type == FORK)
 	{
-		item->left_fork = 0;
-		item->right_fork = 0;
+		item->fork = 0;
 		pthread_mutex_init(&item->mutex, NULL);
 	}
 	item->prev = NULL;

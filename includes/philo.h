@@ -79,8 +79,7 @@ typedef struct s_list_item {
 	t_item_type				type;
 	t_state					state;
 	int						number;
-	int						left_fork;
-	int						right_fork;
+	int						fork;
 	int						times_eaten;
 	struct s_list_item		*next;
 	struct s_list_item		*prev;
