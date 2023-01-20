@@ -51,11 +51,11 @@ void	*monitor_philosophers(void *arg)
 				stop_philosophers(node);
 			}
 			pthread_mutex_unlock(info->death_mutex);
-			if (ft_philo_starved(node->timestamps->start, node))
-			{
-				//ft_put_down_forks(node);
-				stop_philosophers(node);
-			}
+			// if (ft_philo_starved(node->timestamps->start, node))
+			// {
+			// 	//ft_put_down_forks(node);
+			// 	stop_philosophers(node);
+			// }
 		}
 		if (node->args.number_of_philosophers > 1)
 			node = node->next;
