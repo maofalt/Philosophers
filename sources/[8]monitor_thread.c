@@ -44,7 +44,7 @@ void	*monitor_philosophers(void *arg)
 				pthread_mutex_unlock(info->death_mutex);	
 			}
 			pthread_mutex_lock(info->death_mutex);
-			if (info->someone_died == 1)
+			if (info->end == 1)
 			{
 				pthread_mutex_unlock(info->death_mutex);
 				//ft_put_down_forks(node);

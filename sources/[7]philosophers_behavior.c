@@ -30,12 +30,12 @@ void	*philo_thread(void *arg)
 		{
 			printf_mutex(philo, 2);
 			safe_sleep(philo, philo->args.time_to_sleep);
-			philo->state++;
+			philo->state = THINKING;
 		}
 		if (philo->state == THINKING)
 		{
 			printf_mutex(philo, 3);
-			philo->state--;
+			philo->state = SLEEPING;
 		}
 		grab_forks(philo);
 		gettimeofday(&philo->timestamps->start_last_meal, NULL);
@@ -66,25 +66,22 @@ void	safe_grab(t_list_item *philo, t_list_item *fork)
 			break ;
 		}
 		pthread_mutex_unlock(&fork->mutex);
-		usleep(150);
 		check_starved(philo);
 	}
 }
 
-//a function tha splits the sleep function into smaller ones so we can check if he died of starvation or if another philospher die
+/*a function tha splits the sleep function into smaller ones so we can 
+** check if he died of starvation or if another philospher die*/
 void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 {
 	long int				time_in_ms;
 	struct timeval			current;
-	struct timeval const	last_meal = philo->timestamps->start_last_meal;
+	struct timeval 			start;
 
-	gettimeofday(&current, NULL);
-	time_in_ms = (current.tv_sec - last_meal.tv_sec) * 1000
-		+ (current.tv_usec - last_meal.tv_usec) / 1000;
+	gettimeofday(&start, NULL);
+	time_in_ms = 0;
 	while (time_in_ms < time_to_sleep)
 	{
-		ft_usleep(1);
-		time_in_ms += 5;
 		pthread_mutex_lock(philo->info->death_mutex);
 		if (philo->info->end == 1)
 		{
@@ -93,9 +90,10 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 		}
 		pthread_mutex_unlock(philo->info->death_mutex);
 		gettimeofday(&current, NULL);
-		time_in_ms = (current.tv_sec - last_meal.tv_sec) * 1000
-			+ (current.tv_usec - last_meal.tv_usec) / 1000;
+		time_in_ms = (current.tv_sec - start.tv_sec) * 1000
+			+ (current.tv_usec - start.tv_usec) / 1000;
 		check_starved(philo);
+		usleep(100);
 	}
 }
 
@@ -127,49 +125,59 @@ void	printf_mutex(t_list_item *philo, int state)
 
 void	grab_forks(t_list_item *philo)
 {
-	if (philo->args.number_of_philosophers % 2 == 0)
+// 	if (philo->args.number_of_philosophers % 2 == 0)
+// 	{
+// 		safe_grab(philo, philo->prev);
+// 		printf_mutex(philo, 0);
+// 		safe_grab(philo, philo->next);
+// 		printf_mutex(philo, 0);
+// 	}
+//	else
+	if (philo->number % 2 == 0)
 	{
-		pthread_mutex_lock(&philo->prev->mutex);
+		safe_grab(philo, philo->prev);
 		printf_mutex(philo, 0);
-		pthread_mutex_lock(&philo->next->mutex);
+		safe_grab(philo, philo->next);
 		printf_mutex(philo, 0);
 	}
 	else
 	{
-		if (philo->number % 2 == 0)
-		{
-			pthread_mutex_lock(&philo->prev->mutex);
-			printf_mutex(philo, 0);
-			pthread_mutex_lock(&philo->next->mutex);
-			printf_mutex(philo, 0);
-		}
-		else
-		{
-			pthread_mutex_lock(&philo->next->mutex);
-			printf_mutex(philo, 0);
-			pthread_mutex_lock(&philo->prev->mutex);
-			printf_mutex(philo, 0);
-		}
+		safe_grab(philo, philo->next);
+		printf_mutex(philo, 0);
+		safe_grab(philo, philo->prev);
+		printf_mutex(philo, 0);
 	}
 }
 
 void	release_forks(t_list_item *philo)
 {
-	if (philo->args.number_of_philosophers % 2 == 0)
-	{
-		pthread_mutex_unlock(&philo->next->mutex);
-		pthread_mutex_unlock(&philo->prev->mutex);
-	}
-	else
+	// if (philo->args.number_of_philosophers % 2 == 0)
+	// {
+	// 	pthread_mutex_lock(&philo->next->mutex);
+	// 	philo->next->fork = 0;
+	// 	pthread_mutex_unlock(&philo->next->mutex);
+	// 	pthread_mutex_lock(&philo->prev->mutex);
+	// 	philo->prev->fork = 0;
+	// 	pthread_mutex_unlock(&philo->prev->mutex);
+	// }
+	// else
 	{
 		if (philo->number % 2 == 0)
 		{
+			pthread_mutex_lock(&philo->prev->mutex);
+			philo->prev->fork = 0;
 			pthread_mutex_unlock(&philo->prev->mutex);
+			pthread_mutex_lock(&philo->next->mutex);
+			philo->next->fork = 0;
 			pthread_mutex_unlock(&philo->next->mutex);
 		}
 		else
 		{
+			pthread_mutex_lock(&philo->next->mutex);
+			philo->next->fork = 0;
 			pthread_mutex_unlock(&philo->next->mutex);
+			pthread_mutex_lock(&philo->prev->mutex);
+			philo->prev->fork = 0;
 			pthread_mutex_unlock(&philo->prev->mutex);
 		}
 	}
@@ -408,6 +416,6 @@ void	ft_usleep(long int time_in_ms)
 		gettimeofday(&current, NULL);
 		delta = (current.tv_sec - start.tv_sec) * 1000
 			+ (current.tv_usec - start.tv_usec) / 1000;
-		usleep(500);
+		usleep(100);
 	}
 }
