@@ -76,7 +76,7 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 {
 	long int				time_in_ms;
 	struct timeval			current;
-	struct timeval 			start;
+	struct timeval			start;
 
 	gettimeofday(&start, NULL);
 	time_in_ms = 0;
@@ -93,8 +93,8 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 		time_in_ms = (current.tv_sec - start.tv_sec) * 1000
 			+ (current.tv_usec - start.tv_usec) / 1000;
 		check_starved(philo);
-		usleep(100);
 	}
+	philo->timestamps->current;
 }
 
 void	printf_mutex(t_list_item *philo, int state)
@@ -106,8 +106,8 @@ void	printf_mutex(t_list_item *philo, int state)
 
 	info = philo->info;
 	pthread_mutex_lock(info->display_mutex);
-	gettimeofday(&current, NULL);
-	philo->timestamps->current = current;
+	//gettimeofday(&current, NULL);
+	current = philo->timestamps->current;
 	timestamp = (current.tv_sec - philo->timestamps->start.tv_sec) * 1000
 		+ (current.tv_usec - philo->timestamps->start.tv_usec) / 1000;
 	if (state == 0)
@@ -125,62 +125,20 @@ void	printf_mutex(t_list_item *philo, int state)
 
 void	grab_forks(t_list_item *philo)
 {
-// 	if (philo->args.number_of_philosophers % 2 == 0)
-// 	{
-// 		safe_grab(philo, philo->prev);
-// 		printf_mutex(philo, 0);
-// 		safe_grab(philo, philo->next);
-// 		printf_mutex(philo, 0);
-// 	}
-//	else
-	if (philo->number % 2 == 0)
-	{
-		safe_grab(philo, philo->prev);
-		printf_mutex(philo, 0);
-		safe_grab(philo, philo->next);
-		printf_mutex(philo, 0);
-	}
-	else
-	{
-		safe_grab(philo, philo->next);
-		printf_mutex(philo, 0);
-		safe_grab(philo, philo->prev);
-		printf_mutex(philo, 0);
-	}
+	safe_grab(philo, philo->prev);
+	printf_mutex(philo, 0);
+	safe_grab(philo, philo->next);
+	printf_mutex(philo, 0);
 }
 
 void	release_forks(t_list_item *philo)
 {
-	// if (philo->args.number_of_philosophers % 2 == 0)
-	// {
-	// 	pthread_mutex_lock(&philo->next->mutex);
-	// 	philo->next->fork = 0;
-	// 	pthread_mutex_unlock(&philo->next->mutex);
-	// 	pthread_mutex_lock(&philo->prev->mutex);
-	// 	philo->prev->fork = 0;
-	// 	pthread_mutex_unlock(&philo->prev->mutex);
-	// }
-	// else
-	{
-		if (philo->number % 2 == 0)
-		{
-			pthread_mutex_lock(&philo->prev->mutex);
-			philo->prev->fork = 0;
-			pthread_mutex_unlock(&philo->prev->mutex);
-			pthread_mutex_lock(&philo->next->mutex);
-			philo->next->fork = 0;
-			pthread_mutex_unlock(&philo->next->mutex);
-		}
-		else
-		{
-			pthread_mutex_lock(&philo->next->mutex);
-			philo->next->fork = 0;
-			pthread_mutex_unlock(&philo->next->mutex);
-			pthread_mutex_lock(&philo->prev->mutex);
-			philo->prev->fork = 0;
-			pthread_mutex_unlock(&philo->prev->mutex);
-		}
-	}
+	pthread_mutex_lock(&philo->prev->mutex);
+	philo->prev->fork = 0;
+	pthread_mutex_unlock(&philo->prev->mutex);
+	pthread_mutex_lock(&philo->next->mutex);
+	philo->next->fork = 0;
+	pthread_mutex_unlock(&philo->next->mutex);
 }
 
 /* fonction that comnpares th current time with the last meal time and 
@@ -349,7 +307,7 @@ int	ft_philo_starved(struct timeval start, t_list_item *philo)
 	gettimeofday(&current, NULL);
 	start_last_meal = (current.tv_sec - philo->timestamps->start_last_meal.tv_sec) * 1000
 		+ (current.tv_usec - philo->timestamps->start_last_meal.tv_usec) / 1000;
-	if (start_last_meal >= philo->args.time_to_die)
+	if (start_last_meal > philo->args.time_to_die)
 	{
 		pthread_mutex_lock(info->death_mutex);
 		info->someone_died += 1;
@@ -416,6 +374,6 @@ void	ft_usleep(long int time_in_ms)
 		gettimeofday(&current, NULL);
 		delta = (current.tv_sec - start.tv_sec) * 1000
 			+ (current.tv_usec - start.tv_usec) / 1000;
-		usleep(100);
+		usleep(time_in_ms / 10);
 	}
 }

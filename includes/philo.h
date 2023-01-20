@@ -30,8 +30,8 @@ typedef struct s_timestamps {
 	struct timeval	start;
 	struct timeval	current;
 	struct timeval	start_last_meal;
-	int				delta_time;
-	int				delta_last_meal;
+	long int				delta_time;
+	long int				delta_last_meal;
 }	t_timestamps;
 
 // A structure that contains the parsed arguments
