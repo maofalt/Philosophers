@@ -53,6 +53,7 @@ void	*philo_thread(void *arg)
 //function that thinks safely, check the  fork variable on the forks and if it's 0, it means that the fork is free and it can take it
 void	safe_grab(t_list_item *philo, t_list_item *fork)
 {
+
 	while (1)
 	{
 		pthread_mutex_lock(philo->info->death_mutex);
@@ -99,7 +100,7 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 		time_in_ms = (current.tv_sec - start.tv_sec) * 1000
 			+ (current.tv_usec - start.tv_usec) / 1000;
 		check_starved(philo);
-		usleep(100);
+		usleep(150);
 	}
 	philo->timestamps->current = current;
 }
@@ -113,9 +114,6 @@ void	printf_mutex(t_list_item *philo, int state)
 
 	info = philo->info;
 	pthread_mutex_lock(info->display_mutex);
-	current = philo->timestamps->current;
-	timestamp = (current.tv_sec - philo->timestamps->start.tv_sec) * 1000
-		+ (current.tv_usec - philo->timestamps->start.tv_usec) / 1000;
 	pthread_mutex_lock(info->death_mutex);
 	if (info->end >= 1)
 	{
@@ -124,6 +122,9 @@ void	printf_mutex(t_list_item *philo, int state)
 		release_forks(philo);
 		pthread_exit(0);
 	}
+	gettimeofday(&current, NULL);
+	timestamp = (current.tv_sec - philo->timestamps->start.tv_sec) * 1000
+		+ (current.tv_usec - philo->timestamps->start.tv_usec) / 1000;
 	if (state == 0)
 		ft_printf("%d %d has taken a fork\n", timestamp, i);
 	else if (state == 1)
