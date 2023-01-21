@@ -23,7 +23,7 @@ void	*philo_thread(void *arg)
 	while (1)
 	{
 		pthread_mutex_lock(info->death_mutex);
-		if (info->end == 1)
+		if (info->end >= 1)
 			break ;
 		pthread_mutex_unlock(info->death_mutex);
 		if (philo->state == SLEEPING)
@@ -110,6 +110,12 @@ void	printf_mutex(t_list_item *philo, int state)
 	current = philo->timestamps->current;
 	timestamp = (current.tv_sec - philo->timestamps->start.tv_sec) * 1000
 		+ (current.tv_usec - philo->timestamps->start.tv_usec) / 1000;
+	pthread_mutex_lock(info->death_mutex);
+	if (info->end >= 1)
+	{
+		pthread_mutex_unlock(info->death_mutex);
+		pthread_exit(0);
+	}
 	if (state == 0)
 		ft_printf("%d %d has taken a fork\n", timestamp, i);
 	else if (state == 1)
@@ -120,6 +126,7 @@ void	printf_mutex(t_list_item *philo, int state)
 		ft_printf("%d %d is thinking\n", timestamp, i);
 	else if (state == 4)
 		ft_printf("%d %d died\n", timestamp, i);
+	pthread_mutex_unlock(info->death_mutex);
 	pthread_mutex_unlock(info->display_mutex);
 }
 
@@ -165,12 +172,9 @@ void	check_starved(t_list_item *philo)
 	if (time_in_ms >= philo->args.time_to_die)
 	{
 		philo->timestamps->current = current;
+		printf_mutex(philo, 4);
 		pthread_mutex_lock(philo->info->death_mutex);
 		philo->info->end += 1;
-		if (philo->info->end == 1)
-		{
-			printf_mutex(philo, 4);
-		}
 		pthread_mutex_unlock(philo->info->death_mutex);
 		pthread_exit(0);
 	}
