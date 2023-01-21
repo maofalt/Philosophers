@@ -48,4 +48,5 @@ void	ft_init_shared_time(t_list_item *current, struct timeval start)
 {
 	current->timestamps->start = start;
 	current->timestamps->start_last_meal = start;
+	current->timestamps->current = start;
 }

@@ -93,8 +93,9 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 		time_in_ms = (current.tv_sec - start.tv_sec) * 1000
 			+ (current.tv_usec - start.tv_usec) / 1000;
 		check_starved(philo);
+		usleep(100);
 	}
-	philo->timestamps->current;
+	philo->timestamps->current = current;
 }
 
 void	printf_mutex(t_list_item *philo, int state)
@@ -361,7 +362,7 @@ int	ft_stop_signal(t_list_item *philo)
 }
 
 //createown usleep with  gettimeofday function
-void	ft_usleep(long int time_in_ms)
+inline void	ft_usleep(long int time_in_ms)
 {
 	struct timeval	start;
 	struct timeval	current;
