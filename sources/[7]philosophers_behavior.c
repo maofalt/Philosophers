@@ -126,6 +126,13 @@ void	printf_mutex(t_list_item *philo, int state)
 
 void	grab_forks(t_list_item *philo)
 {
+	if (!philo->prev)
+	{
+		safe_grab(philo, philo->next);
+		printf_mutex(philo, 0);
+		safe_sleep(philo, philo->args.time_to_die);
+		pthread_exit(0);
+	}
 	safe_grab(philo, philo->prev);
 	printf_mutex(philo, 0);
 	safe_grab(philo, philo->next);
@@ -134,9 +141,12 @@ void	grab_forks(t_list_item *philo)
 
 void	release_forks(t_list_item *philo)
 {
-	pthread_mutex_lock(&philo->prev->mutex);
-	philo->prev->fork = 0;
-	pthread_mutex_unlock(&philo->prev->mutex);
+	if (philo->prev)
+	{
+		pthread_mutex_lock(&philo->prev->mutex);
+		philo->prev->fork = 0;
+		pthread_mutex_unlock(&philo->prev->mutex);	
+	}
 	pthread_mutex_lock(&philo->next->mutex);
 	philo->next->fork = 0;
 	pthread_mutex_unlock(&philo->next->mutex);
@@ -155,6 +165,7 @@ void	check_starved(t_list_item *philo)
 		+ (current.tv_usec - last_meal.tv_usec) / 1000;
 	if (time_in_ms >= philo->args.time_to_die)
 	{
+		philo->timestamps->current = current;
 		printf_mutex(philo, 4);
 		pthread_mutex_lock(philo->info->death_mutex);
 		philo->info->end = 1;

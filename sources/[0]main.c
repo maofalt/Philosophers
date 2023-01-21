@@ -54,6 +54,7 @@ void	ft_wait_threads(t_list_item *list)
 			pthread_join(*item->thread, NULL);
 
 		}
-		item = item->next;
+		if (item->next)
+			item = item->next;
 	}
 }
