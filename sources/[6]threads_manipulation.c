@@ -17,13 +17,9 @@ void	ft_create_threads(t_list_item *list)
 	t_list_item		*current;
 	struct timeval	start;
 	t_thread_info	*info;
-	pthread_t		*monitor_thread;
 
 	info = ft_create_info();
 	if (!info)
-		return ;
-	monitor_thread = malloc(sizeof(pthread_t));
-	if (!monitor_thread)
 		return ;
 	current = list;
 	gettimeofday(&start, NULL);
@@ -39,9 +35,6 @@ void	ft_create_threads(t_list_item *list)
 		if (current == list || current->args.number_of_philosophers == 1)
 			break ;
 	}
-	// pthread_create(monitor_thread, NULL, monitor_philosophers, list);
-	// pthread_join(*monitor_thread, NULL);
-	free(monitor_thread);
 }
 
 void	ft_init_shared_time(t_list_item *current, struct timeval start)
