@@ -39,8 +39,8 @@ void	ft_create_threads(t_list_item *list)
 		if (current == list || current->args.number_of_philosophers == 1)
 			break ;
 	}
-	pthread_create(monitor_thread, NULL, monitor_philosophers, list);
-	pthread_join(*monitor_thread, NULL);
+	// pthread_create(monitor_thread, NULL, monitor_philosophers, list);
+	// pthread_join(*monitor_thread, NULL);
 	free(monitor_thread);
 }
 

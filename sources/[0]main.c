@@ -31,7 +31,7 @@ int	main(int argc, char **argv)
 		return (free(args), 0);
 	ft_create_threads(list);
 	info = list->info;
-	//ft_wait_threads(list);
+	ft_wait_threads(list);
 	free_list(list);
 	free_info(info);
 	free(args);

@@ -111,6 +111,13 @@ void	printf_mutex(t_list_item *philo, int state)
 	current = philo->timestamps->current;
 	timestamp = (current.tv_sec - philo->timestamps->start.tv_sec) * 1000
 		+ (current.tv_usec - philo->timestamps->start.tv_usec) / 1000;
+	pthread_mutex_lock(info->death_mutex);
+	if (philo->info->end == 1)
+	{
+		pthread_mutex_lock(info->death_mutex);
+		pthread_mutex_unlock(info->display_mutex);
+		return ;
+	}
 	if (state == 0)
 		ft_printf("%d %d has taken a fork\n", timestamp, i);
 	else if (state == 1)
@@ -121,6 +128,7 @@ void	printf_mutex(t_list_item *philo, int state)
 		ft_printf("%d %d is thinking\n", timestamp, i);
 	else if (state == 4)
 		ft_printf("%d %d died\n", timestamp, i);
+	pthread_mutex_unlock(info->death_mutex);
 	pthread_mutex_unlock(info->display_mutex);
 }
 
@@ -174,47 +182,6 @@ void	check_starved(t_list_item *philo)
 	}
 }
 
-// void	*philo_thread(void *arg)
-// {
-// 	t_list_item		*philosopher;
-
-// 	philosopher = (t_list_item *) arg;
-// 	while (!ft_stop_signal(philosopher))
-// 	{
-// 		if (philosopher->state == SLEEPING)
-// 		{
-// 			ft_display_status(philosopher->timestamps->start, philosopher, 0);
-// 			ft_usleep(philosopher->args.time_to_sleep);
-// 			philosopher->state = THINKING;
-// 			continue ;
-// 		}
-// 		if (philosopher->state == THINKING)
-// 		{
-// 			ft_display_status(philosopher->timestamps->start, philosopher, 0);
-// 			philosopher->state = HUNGRY;
-// 			continue ;
-// 		}
-// 		if (philosopher->state == HUNGRY)
-// 		{
-// 			if (!ft_try_eat(philosopher->timestamps->start, philosopher))
-// 			{
-// 				philosopher->state = END;
-// 				continue ;
-// 			}
-// 			ft_display_status(philosopher->timestamps->start, philosopher, 0);
-// 			ft_usleep(philosopher->args.time_to_eat);
-// 			ft_put_down_forks(philosopher);
-// 			philosopher->state = SLEEPING;
-// 		}
-// 		if (philosopher->state == DEAD)
-// 			break ;
-// 		if (philosopher->state == END)
-// 		{
-// 			pthread_exit(0);
-// 		}
-// 	}
-// 	pthread_exit(0);
-// }
 
 // Function to display the current state of a philosopher
 void	ft_display_status(struct timeval start, t_list_item *philo, int fork)
