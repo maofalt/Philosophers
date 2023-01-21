@@ -46,8 +46,7 @@ void	*philo_thread(void *arg)
 		safe_sleep(philo, philo->args.time_to_eat);
 		release_forks(philo);
 	}
-	release_forks(philo);
-	pthread_exit(0);
+	return (NULL);
 }
 
 //function that thinks safely, check the  fork variable on the forks and if it's 0, it means that the fork is free and it can take it
@@ -60,7 +59,7 @@ void	safe_grab(t_list_item *philo, t_list_item *fork)
 		if (philo->info->end >= 1)
 		{
 			pthread_mutex_unlock(philo->info->death_mutex);
-			release_forks(philo);
+			//release_forks(philo);
 			pthread_exit(0);
 		}
 		pthread_mutex_unlock(philo->info->death_mutex);
@@ -92,7 +91,7 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 		if (philo->info->end == 1)
 		{
 			pthread_mutex_unlock(philo->info->death_mutex);
-			release_forks(philo);
+			//release_forks(philo);
 			pthread_exit(0);
 		}
 		pthread_mutex_unlock(philo->info->death_mutex);
@@ -119,7 +118,7 @@ void	printf_mutex(t_list_item *philo, int state)
 	{
 		pthread_mutex_unlock(info->death_mutex);
 		pthread_mutex_unlock(info->display_mutex);
-		release_forks(philo);
+		//release_forks(philo);
 		pthread_exit(0);
 	}
 	gettimeofday(&current, NULL);
@@ -149,7 +148,7 @@ void	grab_forks(t_list_item *philo)
 		safe_grab(philo, philo->next);
 		printf_mutex(philo, 0);
 		safe_sleep(philo, philo->args.time_to_die);
-		release_forks(philo);
+		//release_forks(philo);
 		pthread_exit(0);
 	}
 	safe_grab(philo, philo->prev);
@@ -188,7 +187,7 @@ void	check_starved(t_list_item *philo)
 	{
 		philo->timestamps->current = current;
 		printf_mutex(philo, 4);
-		release_forks(philo);
+		//release_forks(philo);
 		pthread_exit(0);
 	}
 }
