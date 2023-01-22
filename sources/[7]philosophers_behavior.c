@@ -20,16 +20,10 @@ void	*philo_thread(void *arg)
 
 	philo = (t_list_item *)arg;
 	info = philo->info;
-	while (1)
+	if (philo->number % 2 == 0)
+		usleep(5000);
+	while (info->end == 0)
 	{
-		if (info->end >= 1)
-			break ;
-		if (philo->state == SLEEPING)
-		{
-			printf_mutex(philo, 2);
-			safe_sleep(philo, philo->args.time_to_sleep);
-			philo->state = THINKING;
-		}
 		if (philo->state == THINKING)
 		{
 			printf_mutex(philo, 3);
@@ -45,6 +39,12 @@ void	*philo_thread(void *arg)
 		if (philo->info->nbr_philo_full == philo->args.number_of_philosophers)
 			philo->info->end += 1;
 		release_forks(philo);
+		if (philo->state == SLEEPING)
+		{
+			printf_mutex(philo, 2);
+			safe_sleep(philo, philo->args.time_to_sleep);
+			philo->state = THINKING;
+		}
 	}
 	return (NULL);
 }

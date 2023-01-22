@@ -31,8 +31,8 @@ typedef struct s_timestamps {
 	struct timeval	start;
 	struct timeval	current;
 	struct timeval	start_last_meal;
-	long int				delta_time;
-	long int				delta_last_meal;
+	long int		delta_time;
+	long int		delta_last_meal;
 }	t_timestamps;
 
 // A structure that contains the parsed arguments
@@ -68,6 +68,7 @@ typedef enum e_item_type {
 // 	- A pointer to the previous item in the list
 
 typedef struct s_thread_info {
+	atomic_int		launched_threads;
 	atomic_int		nbr_philo_full;
 	int				someone_died;
 	atomic_int		end;
