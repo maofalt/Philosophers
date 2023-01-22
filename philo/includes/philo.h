@@ -96,6 +96,7 @@ typedef struct s_list_item {
 /*############################################################################*/
 
 int					ft_valid_arguments(int argc, char **argv);
+int					valid_integer(char *str);
 
 /*############################################################################*/
 /*                           PARSE_ARGUMENTS							      */
