@@ -151,6 +151,11 @@ void	grab_forks(t_list_item *philo)
 	printf_mutex(philo, 0);
 	safe_grab(philo, philo->next);
 	printf_mutex(philo, 0);
+	philo->times_eaten++;
+	if (philo->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
+		philo->info->nbr_philo_full++;
+	if (philo->info->nbr_philo_full == philo->args.number_of_philosophers)
+		philo->info->end += 1;
 }
 
 void	release_forks(t_list_item *philo)
