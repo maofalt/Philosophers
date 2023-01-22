@@ -29,7 +29,8 @@ int	ft_create_threads(t_list_item *list)
 		if (current->type == PHILOSOPHER)
 		{
 			ft_init_shared_time(current, start);
-			pthread_create(current->thread, NULL, philo_thread, current);
+			if (!pthread_create(current->thread, NULL, philo_thread, current))
+				return (0);
 		}
 		current = current->next;
 		if (current == list || current->args.number_of_philosophers == 1)
