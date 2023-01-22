@@ -84,7 +84,7 @@ OBJS = $(addprefix $(OBJS_PATH), $(OBJS_NAME))
 #=============================================================================#
 
 CC = cc
-CFLAGS = -MMD -Wall -Wextra -Werror -pthread
+CFLAGS = -MMD -Wall -Wextra -Werror -pthread -g -fsanitize=thread
 LIBA = ar rc
 LIBS = ranlib
 

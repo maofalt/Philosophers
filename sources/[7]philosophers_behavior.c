@@ -22,13 +22,8 @@ void	*philo_thread(void *arg)
 	info = philo->info;
 	while (1)
 	{
-		pthread_mutex_lock(info->death_mutex);
 		if (info->end >= 1)
-		{
-			pthread_mutex_unlock(info->death_mutex);
 			break ;
-		}
-		pthread_mutex_unlock(info->death_mutex);
 		if (philo->state == SLEEPING)
 		{
 			printf_mutex(philo, 2);
@@ -44,6 +39,11 @@ void	*philo_thread(void *arg)
 		gettimeofday(&philo->timestamps->start_last_meal, NULL);
 		printf_mutex(philo, 1);
 		safe_sleep(philo, philo->args.time_to_eat);
+		philo->times_eaten++;
+		if (philo->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
+			philo->info->nbr_philo_full++;
+		if (philo->info->nbr_philo_full == philo->args.number_of_philosophers)
+			philo->info->end += 1;
 		release_forks(philo);
 	}
 	return (NULL);
@@ -52,16 +52,10 @@ void	*philo_thread(void *arg)
 //function that thinks safely, check the  fork variable on the forks and if it's 0, it means that the fork is free and it can take it
 void	safe_grab(t_list_item *philo, t_list_item *fork)
 {
-
 	while (1)
 	{
-		pthread_mutex_lock(philo->info->death_mutex);
 		if (philo->info->end >= 1)
-		{
-			pthread_mutex_unlock(philo->info->death_mutex);
 			pthread_exit(0);
-		}
-		pthread_mutex_unlock(philo->info->death_mutex);
 		pthread_mutex_lock(&fork->mutex);
 		if (fork->fork == 0)
 		{
@@ -86,13 +80,8 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 	time_in_ms = 0;
 	while (time_in_ms < time_to_sleep)
 	{
-		pthread_mutex_lock(philo->info->death_mutex);
 		if (philo->info->end == 1)
-		{
-			pthread_mutex_unlock(philo->info->death_mutex);
 			pthread_exit(0);
-		}
-		pthread_mutex_unlock(philo->info->death_mutex);
 		gettimeofday(&current, NULL);
 		time_in_ms = (current.tv_sec - start.tv_sec) * 1000
 			+ (current.tv_usec - start.tv_usec) / 1000;
@@ -111,10 +100,8 @@ void	printf_mutex(t_list_item *philo, int state)
 
 	info = philo->info;
 	pthread_mutex_lock(info->display_mutex);
-	pthread_mutex_lock(info->death_mutex);
 	if (info->end >= 1)
 	{
-		pthread_mutex_unlock(info->death_mutex);
 		pthread_mutex_unlock(info->display_mutex);
 		pthread_exit(0);
 	}
@@ -124,7 +111,9 @@ void	printf_mutex(t_list_item *philo, int state)
 	if (state == 0)
 		ft_printf("%d %d has taken a fork\n", timestamp, i);
 	else if (state == 1)
+	{
 		ft_printf("%d %d is eating\n", timestamp, i);
+	}
 	else if (state == 2)
 		ft_printf("%d %d is sleeping\n", timestamp, i);
 	else if (state == 3)
@@ -134,7 +123,6 @@ void	printf_mutex(t_list_item *philo, int state)
 		ft_printf("%d %d died\n", timestamp, i);
 		info->end += 1;
 	}
-	pthread_mutex_unlock(info->death_mutex);
 	pthread_mutex_unlock(info->display_mutex);
 }
 
@@ -151,11 +139,6 @@ void	grab_forks(t_list_item *philo)
 	printf_mutex(philo, 0);
 	safe_grab(philo, philo->next);
 	printf_mutex(philo, 0);
-	philo->times_eaten++;
-	if (philo->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
-		philo->info->nbr_philo_full++;
-	if (philo->info->nbr_philo_full == philo->args.number_of_philosophers)
-		philo->info->end += 1;
 }
 
 void	release_forks(t_list_item *philo)
