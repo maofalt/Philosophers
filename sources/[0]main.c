@@ -29,11 +29,13 @@ int	main(int argc, char **argv)
 	list = ft_create_list(args);
 	if (!list)
 		return (free(args), 0);
-	ft_create_threads(list);
-	info = list->info;
-	ft_wait_threads(list);
+	if (!ft_create_threads(list))
+	{
+		info = list->info;
+		ft_wait_threads(list);
+		free_info(info);
+	}
 	free_list(list);
-	free_info(info);
 	free(args);
 }
 

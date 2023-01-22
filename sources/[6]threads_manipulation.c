@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-void	ft_create_threads(t_list_item *list)
+int	ft_create_threads(t_list_item *list)
 {
 	t_list_item		*current;
 	struct timeval	start;
@@ -20,7 +20,7 @@ void	ft_create_threads(t_list_item *list)
 
 	info = ft_create_info();
 	if (!info)
-		return ;
+		return (1);
 	current = list;
 	gettimeofday(&start, NULL);
 	while (current)
@@ -35,6 +35,7 @@ void	ft_create_threads(t_list_item *list)
 		if (current == list || current->args.number_of_philosophers == 1)
 			break ;
 	}
+	return (0);
 }
 
 void	ft_init_shared_time(t_list_item *current, struct timeval start)

@@ -139,7 +139,7 @@ void				free_info(t_thread_info *info);
 /*                           THREADS_MANIPULATION							  */
 /*############################################################################*/
 
-void				ft_create_threads(t_list_item *list);
+int					ft_create_threads(t_list_item *list);
 void				ft_init_shared_time(t_list_item *current, struct timeval start);
 void				ft_init_shared_info(t_list_item *current, int *nbr_philo_full,
 						int *someone_died);
