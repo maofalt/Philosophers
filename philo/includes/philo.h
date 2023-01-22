@@ -157,20 +157,14 @@ int					ft_stop_signal(t_list_item *philo);
 void				ft_usleep(long int time_in_ms);
 
 /*############################################################################*/
-/*                           MONITOR	BEHAVIOR							  */
-/*############################################################################*/
-void				*monitor_philosophers(void *arg);
-void				stop_philosophers(t_list_item *phlo);
-
-/*############################################################################*/
 /*                          NEW PHILO BEHAVIOR  							  */
 /*############################################################################*/
-void				printf_mutex(t_list_item *philo, int state);
-void				grab_forks(t_list_item *philo);
+int					printf_mutex(t_list_item *philo, int state);
+int					grab_forks(t_list_item *philo);
 void				release_forks(t_list_item *philo);
-void				safe_sleep(t_list_item *philo, long int time_to_sleep);
-void				safe_grab(t_list_item *philo, t_list_item *fork);
-void				check_starved(t_list_item *philo);
-void				safe_grab2(t_list_item *philo);
+int					safe_sleep(t_list_item *philo, long int time_to_sleep);
+int					safe_grab(t_list_item *philo, t_list_item *fork);
+int					check_starved(t_list_item *philo);
+int					safe_grab2(t_list_item *philo);
 
 #endif

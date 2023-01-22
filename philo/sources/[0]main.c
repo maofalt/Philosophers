@@ -50,8 +50,7 @@ void	ft_wait_threads(t_list_item *list)
 	while (i++ < max)
 	{
 		if (item->type == PHILOSOPHER)
-		{
-			pthread_join(*item->thread, NULL);		}
+			pthread_join(*item->thread, NULL);
 		if (item->next)
 			item = item->next;
 	}

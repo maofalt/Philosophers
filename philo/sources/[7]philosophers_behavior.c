@@ -24,13 +24,17 @@ void	*philo_thread(void *arg)
 	{
 		if (philo->state == THINKING)
 		{
-			printf_mutex(philo, 3);
+			if (printf_mutex(philo, 3))
+				return (NULL);
 			philo->state = SLEEPING;
 		}
-		grab_forks(philo);
+		if (grab_forks(philo))
+			return (NULL);
 		gettimeofday(&philo->timestamps->start_last_meal, NULL);
-		printf_mutex(philo, 1);
-		safe_sleep(philo, philo->args.time_to_eat);
+		if (printf_mutex(philo, 1))
+			return (NULL);
+		if (safe_sleep(philo, philo->args.time_to_eat))
+			return (NULL);
 		philo->times_eaten++;
 		if (philo->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
 			philo->info->nbr_philo_full++;
@@ -39,8 +43,10 @@ void	*philo_thread(void *arg)
 		release_forks(philo);
 		if (philo->state == SLEEPING)
 		{
-			printf_mutex(philo, 2);
-			safe_sleep(philo, philo->args.time_to_sleep);
+			if (printf_mutex(philo, 2))
+				return (NULL);
+			if (safe_sleep(philo, philo->args.time_to_sleep))
+				return (NULL);
 			philo->state = THINKING;
 		}
 	}
@@ -48,12 +54,12 @@ void	*philo_thread(void *arg)
 }
 
 //function that thinks safely, check the  fork variable on the forks and if it's 0, it means that the fork is free and it can take it
-void	safe_grab(t_list_item *philo, t_list_item *fork)
+int	safe_grab(t_list_item *philo, t_list_item *fork)
 {
 	while (1)
 	{
 		if (philo->info->end >= 1)
-			pthread_exit(0);
+			return (1);
 		pthread_mutex_lock(&fork->mutex);
 		if (fork->fork == 0)
 		{
@@ -62,11 +68,13 @@ void	safe_grab(t_list_item *philo, t_list_item *fork)
 			break ;
 		}
 		pthread_mutex_unlock(&fork->mutex);
-		check_starved(philo);
+		if (check_starved(philo))
+			return (1);
 	}
+	return (0);
 }
 
-void	safe_grab2(t_list_item *philo)
+int	safe_grab2(t_list_item *philo)
 {
 	int					both_forks;
 	int					forks_held;
@@ -80,7 +88,7 @@ void	safe_grab2(t_list_item *philo)
 	while (both_forks < 2)
 	{
 		if (philo->info->end >= 1)
-			pthread_exit(0);
+			return (1);
 		pthread_mutex_lock(&left_fork->mutex);
 		if (left_fork->fork == 0)
 		{
@@ -116,15 +124,17 @@ void	safe_grab2(t_list_item *philo)
 			both_forks = 0;
 			forks_held = 0;
 		}
-		check_starved(philo);
+		if (check_starved(philo))
+			return (1);
 		if (philo->args.number_of_philosophers != 5)
 			usleep(100);
 	}
+	return (0);
 }
 
 /*a function tha splits the sleep function into smaller ones so we can 
 ** check if he died of starvation or if another philospher die*/
-void	safe_sleep(t_list_item *philo, long int time_to_sleep)
+int	safe_sleep(t_list_item *philo, long int time_to_sleep)
 {
 	long int				time_in_ms;
 	struct timeval			current;
@@ -135,17 +145,19 @@ void	safe_sleep(t_list_item *philo, long int time_to_sleep)
 	while (time_in_ms < time_to_sleep)
 	{
 		if (philo->info->end == 1)
-			pthread_exit(0);
+			return (1);
 		gettimeofday(&current, NULL);
 		time_in_ms = (current.tv_sec - start.tv_sec) * 1000
 			+ (current.tv_usec - start.tv_usec) / 1000;
-		check_starved(philo);
+		if (check_starved(philo))
+			return (1);
 		usleep(1000);
 	}
 	philo->timestamps->current = current;
+	return (0);
 }
 
-void	printf_mutex(t_list_item *philo, int state)
+int	printf_mutex(t_list_item *philo, int state)
 {
 	struct timeval	current;
 	t_thread_info	*info;
@@ -157,7 +169,7 @@ void	printf_mutex(t_list_item *philo, int state)
 	if (info->end >= 1)
 	{
 		pthread_mutex_unlock(info->display_mutex);
-		pthread_exit(0);
+		return (1);
 	}
 	gettimeofday(&current, NULL);
 	timestamp = (current.tv_sec - philo->timestamps->start.tv_sec) * 1000
@@ -183,19 +195,25 @@ void	printf_mutex(t_list_item *philo, int state)
 	else if (state == 5)
 		ft_printf("%d %d has taken a fork\n", timestamp, i);
 	pthread_mutex_unlock(info->display_mutex);
+	return (0);
 }
 
-void	grab_forks(t_list_item *philo)
+int	grab_forks(t_list_item *philo)
 {
 	if (!philo->prev)
 	{
-		safe_grab(philo, philo->next);
-		printf_mutex(philo, 5);
-		safe_sleep(philo, philo->args.time_to_die);
-		pthread_exit(0);
+		if (safe_grab(philo, philo->next))
+			return (1);
+		if (printf_mutex(philo, 5))
+			return (1);
+		if (safe_sleep(philo, philo->args.time_to_die))
+			return (1);
+		return (1);
 	}
 	safe_grab2(philo);
-	printf_mutex(philo, 0);
+	if (printf_mutex(philo, 0))
+		return (1);
+	return (0);
 }
 
 void	release_forks(t_list_item *philo)
@@ -215,7 +233,7 @@ void	release_forks(t_list_item *philo)
 
 /* fonction that comnpares th current time with the last meal time and 
 ** if it is greater than the time to die, it kills the philosopher*/
-void	check_starved(t_list_item *philo)
+int	check_starved(t_list_item *philo)
 {
 	struct timeval			current;
 	struct timeval const	last_meal = philo->timestamps->start_last_meal;
@@ -227,11 +245,12 @@ void	check_starved(t_list_item *philo)
 	if (time_in_ms >= philo->args.time_to_die)
 	{
 		philo->timestamps->current = current;
-		printf_mutex(philo, 4);
-		pthread_exit(0);
+		if (printf_mutex(philo, 4))
+			return (1);
+		return (1);
 	}
+	return (0);
 }
-
 
 //createown usleep with  gettimeofday function
 inline void	ft_usleep(long int time_in_ms)

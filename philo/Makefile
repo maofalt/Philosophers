@@ -53,7 +53,6 @@ SRCS_NAME_PS = [0]main.c \
 			[5]info_manipulation.c \
 			[6]threads_manipulation.c \
 			[7]philosophers_behavior.c \
-			[8]monitor_thread.c
 
 SRCS_PS = $(addprefix $(SRCS_DIR_PS), $(SRCS_NAME_PS))
 
@@ -84,7 +83,7 @@ OBJS = $(addprefix $(OBJS_PATH), $(OBJS_NAME))
 #=============================================================================#
 
 CC = cc
-CFLAGS = -MMD -Wall -Wextra -Werror -pthread
+CFLAGS = -MMD -Wall -Wextra -Werror -pthread -Ofast
 LIBA = ar rc
 LIBS = ranlib
 
