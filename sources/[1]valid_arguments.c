@@ -12,23 +12,6 @@
 
 #include "philo.h"
 
-// A function that checks if a string represents an integer
-// static int	is_integer(char *s)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	if (s[0] == '-')
-// 		i = 1;
-// 	while (s[i] != 0)
-// 	{
-// 		if (s[i] < '0' || s[i] > '9')
-// 			return (0);
-// 		i++;
-// 	}
-// 	return (1);
-// }
-
 // A function that checks if the arguments are valid
 int	ft_valid_arguments(int argc, char **argv)
 {
@@ -72,12 +55,10 @@ int	valid_integer(char *str)
 	{
 		if (res > INT_MAX / 10 || (res == INT_MAX / 10 && str[i] - '0' > 7))
 			return (0);
-		if (neg == -1 && (res < INT_MIN / 10 || (res == INT_MIN / 10 && str[i] - '0' > 8)))
+		if (neg == -1 && (res < INT_MIN / 10
+				|| (res == INT_MIN / 10 && str[i] - '0' > 8)))
 			return (0);
-		res = res * 10 + str[i] - '0';
-		i++;
+		res = res * 10 + str[i++] - '0';
 	}
-	if (str[i] != '\0')
-		return (0);
-	return (1);
+	return (str[i] == '\0');
 }
