@@ -171,5 +171,6 @@ void				release_forks(t_list_item *philo);
 void				safe_sleep(t_list_item *philo, long int time_to_sleep);
 void				safe_grab(t_list_item *philo, t_list_item *fork);
 void				check_starved(t_list_item *philo);
+void				safe_grab2(t_list_item *philo);
 
 #endif
