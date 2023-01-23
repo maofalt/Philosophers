@@ -27,7 +27,7 @@ void	*philo_thread(void *arg)
 			philo->state = SLEEPING;
 		}
 		if (philo->args.number_of_philosophers == 5)
-			ft_usleep(philo->args.time_to_sleep);
+			safe_sleep(philo, philo->args.time_to_sleep);
 		if (philo_eats(philo))
 			return (NULL);
 		if (philo->state == SLEEPING)
@@ -96,7 +96,7 @@ int	safe_sleep(t_list_item *philo, long int time_to_sleep)
 			+ (current.tv_usec - start.tv_usec) / 1000;
 		if (check_starved(philo))
 			return (1);
-		usleep(1000);
+		ft_usleep(1);
 	}
 	philo->timestamps->current = current;
 	return (0);

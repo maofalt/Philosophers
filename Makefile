@@ -179,11 +179,11 @@ $(OBJS_PATH):
 
 $(OBJS_PATH)%.o: $(SRCS_DIR_PS)%.c $(HDRS)
 		@$(CC) $(CFLAGS) $(HDR_INC) $(LIBFT_HDIR_INC) -o $@ -c $<
-		@echo "\t[ $(GREEN)✔$(NONE) ] $@ objet pipex"
+		@echo "\t[ $(GREEN)✔$(NONE) ] $@ objet philo"
 
 $(NAME): $(GNL_OBJ) $(OBJS_PATH) $(OBJS) $(HDRS)
 		@$(CC) $(CFLAGS) $(GNL_OBJ) $(OBJS) $(LIB_BINARY) $(HDR_INC) -o $@
-		@echo "\t[ $(GREEN)✔$(NONE) ] pipex"
+		@echo "\t[ $(GREEN)✔$(NONE) ] philo"
 
 malloc_test: $(OBJS_PATH) $(OBJS)
 		@make -C libft
