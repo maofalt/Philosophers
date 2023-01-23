@@ -53,6 +53,8 @@ SRCS_NAME_PS = [0]main.c \
 			[5]info_manipulation.c \
 			[6]threads_manipulation.c \
 			[7]philosophers_behavior.c \
+			[8]forks_management.c 
+
 
 SRCS_PS = $(addprefix $(SRCS_DIR_PS), $(SRCS_NAME_PS))
 

@@ -30,4 +30,3 @@ t_arguments	*ft_parse_arguments(int argc, char **argv)
 		args->number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
 	return (args);
 }
-	

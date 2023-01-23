@@ -120,8 +120,8 @@ t_list_item			*create_item(t_item_type type, t_state state,
 						t_arguments a, int nb);
 int					ft_init_first_philo_fork(t_list_item **first,
 						t_list_item **fork, t_arguments *args);
-int					ft_create_philo(t_list_item **philosopher, t_arguments *args,
-						int i, t_list_item **first);
+int					ft_create_philo(t_list_item **philosopher,
+						t_arguments *args, int i, t_list_item **first);
 int					ft_create_fork(t_list_item **fork, t_arguments *args, int i,
 						t_list_item **first);
 int					ft_philo_allocation(t_list_item *item, t_item_type type,
@@ -140,9 +140,10 @@ void				free_info(t_thread_info *info);
 /*############################################################################*/
 
 int					ft_create_threads(t_list_item *list);
-void				ft_init_shared_time(t_list_item *current, struct timeval start);
-void				ft_init_shared_info(t_list_item *current, int *nbr_philo_full,
-						int *someone_died);
+void				ft_init_shared_time(t_list_item *current,
+						struct timeval start);
+void				ft_init_shared_info(t_list_item *current,
+						int *nbr_philo_full, int *someone_died);
 void				ft_wait_threads(t_list_item *list);
 
 /*############################################################################*/
@@ -151,7 +152,8 @@ void				ft_wait_threads(t_list_item *list);
 
 void				*philo_thread(void *arg);
 int					philo_eats(t_list_item *philo);
-void				ft_display_status(struct timeval start, t_list_item *philo, int fork);
+void				ft_display_status(struct timeval start,
+						t_list_item *philo, int fork);
 int					ft_try_eat(struct timeval start, t_list_item *philo);
 void				ft_put_down_forks(t_list_item *philo);
 int					ft_philo_starved(struct timeval start, t_list_item *philo);
@@ -165,9 +167,16 @@ int					printf_mutex(t_list_item *philo, int state);
 int					grab_forks(t_list_item *philo);
 void				release_forks(t_list_item *philo);
 int					safe_sleep(t_list_item *philo, long int time_to_sleep);
-int					safe_grab(t_list_item *philo, t_list_item *fork);
 int					check_starved(t_list_item *philo);
-int					safe_grab_two(t_list_item *philo);
+void				death_message(t_list_item *philo, int ts);
+
+/*############################################################################*/
+/*                         FORKS MANAGEMENT		 							  */
+/*############################################################################*/
 int					grab_fork(t_list_item *fork, int *forks, int fork_mask);
-void				forks_reset(int forks_held, t_list_item *l_fork, t_list_item *r_fork);
+int					safe_grab(t_list_item *philo, t_list_item *fork);
+int					safe_grab_two(t_list_item *philo);
+void				forks_reset(int forks_held, t_list_item *l_fork,
+						t_list_item *r_fork);
+
 #endif

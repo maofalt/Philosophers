@@ -19,18 +19,17 @@ int	ft_valid_arguments(int argc, char **argv)
 		return (0);
 	if (argv[1][0] == 0 || !valid_integer(argv[1]) || ft_atoi(argv[1]) < 1)
 		return (0);
-	if (argv[2][0] == 0 || !valid_integer(argv[2]) || ft_atoi(argv[2]) < 0)
+	if (argv[2][0] == 0 || !valid_integer(argv[2]) || ft_atoi(argv[2]) < 1)
 		return (0);
-	if (argv[3][0] == 0 || !valid_integer(argv[3]) || ft_atoi(argv[3]) < 0)
+	if (argv[3][0] == 0 || !valid_integer(argv[3]) || ft_atoi(argv[3]) < 1)
 		return (0);
-	if (argv[4][0] == 0 || !valid_integer(argv[4]) || ft_atoi(argv[4]) < 0)
+	if (argv[4][0] == 0 || !valid_integer(argv[4]) || ft_atoi(argv[4]) < 1)
 		return (0);
 	if (argc == 6
 		&& (argv[5][0] == 0 || !valid_integer(argv[5]) || ft_atoi(argv[5]) < 0))
 		return (0);
 	return (1);
 }
-
 
 /*Know if the string is a valid integer : No bigger 
 **than INT_MAX and no smaller than INT_MIN*/
