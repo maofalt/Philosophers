@@ -99,18 +99,7 @@ int	safe_grab_two(t_list_item *philo)
 	forks_held = 0;
 	while (both_forks < 2)
 	{
-		if (forks_held & 1)
-		{
-			pthread_mutex_lock(&left_fork->mutex);
-			left_fork->fork = 0;
-			pthread_mutex_unlock(&left_fork->mutex);
-		}
-		if (forks_held & 2)
-		{
-			pthread_mutex_lock(&right_fork->mutex);
-			right_fork->fork = 0;
-			pthread_mutex_unlock(&right_fork->mutex);
-		}
+		forks_reset(forks_held, left_fork, right_fork);
 		if (check_starved(philo) || philo->info->end >= 1)
 			return (1);
 		both_forks = 0;
@@ -137,6 +126,22 @@ int	grab_fork(t_list_item *fork, int *forks, int fork_mask)
 	}
 	pthread_mutex_unlock(&fork->mutex);
 	return (forks_held);
+}
+
+void	forks_reset(int forks_held, t_list_item *l_fork, t_list_item *r_fork)
+{
+	if (forks_held & 1)
+	{
+		pthread_mutex_lock(&l_fork->mutex);
+		l_fork->fork = 0;
+		pthread_mutex_unlock(&l_fork->mutex);
+	}
+	if (forks_held & 2)
+	{
+		pthread_mutex_lock(&r_fork->mutex);
+		r_fork->fork = 0;
+		pthread_mutex_unlock(&r_fork->mutex);
+	}
 }
 
 /*a function tha splits the sleep function into smaller ones so we can 

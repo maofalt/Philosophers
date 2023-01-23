@@ -169,4 +169,5 @@ int					safe_grab(t_list_item *philo, t_list_item *fork);
 int					check_starved(t_list_item *philo);
 int					safe_grab_two(t_list_item *philo);
 int					grab_fork(t_list_item *fork, int *forks, int fork_mask);
+void				forks_reset(int forks_held, t_list_item *l_fork, t_list_item *r_fork);
 #endif
