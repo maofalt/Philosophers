@@ -28,19 +28,10 @@ void	*philo_thread(void *arg)
 				return (NULL);
 			philo->state = SLEEPING;
 		}
-		if (grab_forks(philo))
+		if (philo->args.number_of_philosophers == 5)
+			ft_usleep(philo->args.time_to_sleep);
+		if (philo_eats(philo))
 			return (NULL);
-		gettimeofday(&philo->timestamps->start_last_meal, NULL);
-		if (printf_mutex(philo, 1))
-			return (NULL);
-		if (safe_sleep(philo, philo->args.time_to_eat))
-			return (NULL);
-		philo->times_eaten++;
-		if (philo->times_eaten == philo->args.number_of_times_each_philosopher_must_eat)
-			philo->info->nbr_philo_full++;
-		if (philo->info->nbr_philo_full == philo->args.number_of_philosophers)
-			philo->info->end += 1;
-		release_forks(philo);
 		if (philo->state == SLEEPING)
 		{
 			if (printf_mutex(philo, 2))
@@ -53,7 +44,28 @@ void	*philo_thread(void *arg)
 	return (NULL);
 }
 
-//function that thinks safely, check the  fork variable on the forks and if it's 0, it means that the fork is free and it can take it
+
+int	philo_eats(t_list_item *philo)
+{
+	if (grab_forks(philo))
+		return (1);
+	gettimeofday(&philo->timestamps->start_last_meal, NULL);
+	if (printf_mutex(philo, 1))
+		return (1);
+	if (safe_sleep(philo, philo->args.time_to_eat))
+		return (1);
+	philo->times_eaten++;
+	if (philo->times_eaten
+		== philo->args.number_of_times_each_philosopher_must_eat)
+		philo->info->nbr_philo_full++;
+	if (philo->info->nbr_philo_full == philo->args.number_of_philosophers)
+		philo->info->end += 1;
+	release_forks(philo);
+	return (0);
+}
+
+/* function that thinks safely, check the  fork variable on the forks 
+** and if it's 0, it means that the fork is free and it can take it */
 int	safe_grab(t_list_item *philo, t_list_item *fork)
 {
 	while (1)
@@ -74,7 +86,7 @@ int	safe_grab(t_list_item *philo, t_list_item *fork)
 	return (0);
 }
 
-int	safe_grab2(t_list_item *philo)
+int	safe_grab_two(t_list_item *philo)
 {
 	int					both_forks;
 	int					forks_held;
@@ -87,49 +99,44 @@ int	safe_grab2(t_list_item *philo)
 	forks_held = 0;
 	while (both_forks < 2)
 	{
-		if (philo->info->end >= 1)
-			return (1);
-		pthread_mutex_lock(&left_fork->mutex);
-		if (left_fork->fork == 0)
+		if (forks_held & 1)
 		{
-			left_fork->fork = 1;
-			both_forks++;
-			forks_held |= 1;
+			pthread_mutex_lock(&left_fork->mutex);
+			left_fork->fork = 0;
+			pthread_mutex_unlock(&left_fork->mutex);
 		}
-		pthread_mutex_unlock(&left_fork->mutex);
-		if (philo->args.number_of_philosophers == 5)
-			usleep(500);
-		pthread_mutex_lock(&right_fork->mutex);
-		if (right_fork->fork == 0)
-		{	
-			right_fork->fork = 1;
-			both_forks++;
-			forks_held |= 2;
-		}
-		pthread_mutex_unlock(&right_fork->mutex);
-		if (both_forks < 2)
+		if (forks_held & 2)
 		{
-			if (forks_held & 1)
-			{
-				pthread_mutex_lock(&left_fork->mutex);
-				left_fork->fork = 0;
-				pthread_mutex_unlock(&left_fork->mutex);
-			}
-			if (forks_held & 2)
-			{
-				pthread_mutex_lock(&right_fork->mutex);
-				right_fork->fork = 0;
-				pthread_mutex_unlock(&right_fork->mutex);
-			}
-			both_forks = 0;
-			forks_held = 0;
+			pthread_mutex_lock(&right_fork->mutex);
+			right_fork->fork = 0;
+			pthread_mutex_unlock(&right_fork->mutex);
 		}
-		if (check_starved(philo))
+		if (check_starved(philo) || philo->info->end >= 1)
 			return (1);
-		if (philo->args.number_of_philosophers != 5)
-			usleep(100);
+		both_forks = 0;
+		forks_held = 0;
+		forks_held |= grab_fork(left_fork, &both_forks, 1);
+		if (forks_held & 1)
+			forks_held |= grab_fork(right_fork, &both_forks, 2);
+		usleep(100);
 	}
 	return (0);
+}
+
+int	grab_fork(t_list_item *fork, int *forks, int fork_mask)
+{
+	int	forks_held;
+
+	forks_held = 0;
+	pthread_mutex_lock(&fork->mutex);
+	if (fork->fork == 0)
+	{
+		fork->fork = 1;
+		*forks = *forks + 1;
+		forks_held = fork_mask;
+	}
+	pthread_mutex_unlock(&fork->mutex);
+	return (forks_held);
 }
 
 /*a function tha splits the sleep function into smaller ones so we can 
@@ -210,7 +217,7 @@ int	grab_forks(t_list_item *philo)
 			return (1);
 		return (1);
 	}
-	safe_grab2(philo);
+	safe_grab_two(philo);
 	if (printf_mutex(philo, 0))
 		return (1);
 	return (0);

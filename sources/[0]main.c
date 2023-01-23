@@ -52,7 +52,10 @@ void	ft_wait_threads(t_list_item *list)
 	while (i++ < max)
 	{
 		if (item->type == PHILOSOPHER)
-			pthread_join(*item->thread, NULL);
+		{
+			if (pthread_join(*item->thread, NULL))
+				printf ("Erroir when trying to join thread\n");
+		}
 		if (item->next)
 			item = item->next;
 	}

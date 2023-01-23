@@ -150,6 +150,7 @@ void				ft_wait_threads(t_list_item *list);
 /*############################################################################*/
 
 void				*philo_thread(void *arg);
+int					philo_eats(t_list_item *philo);
 void				ft_display_status(struct timeval start, t_list_item *philo, int fork);
 int					ft_try_eat(struct timeval start, t_list_item *philo);
 void				ft_put_down_forks(t_list_item *philo);
@@ -166,6 +167,6 @@ void				release_forks(t_list_item *philo);
 int					safe_sleep(t_list_item *philo, long int time_to_sleep);
 int					safe_grab(t_list_item *philo, t_list_item *fork);
 int					check_starved(t_list_item *philo);
-int					safe_grab2(t_list_item *philo);
-
+int					safe_grab_two(t_list_item *philo);
+int					grab_fork(t_list_item *fork, int *forks, int fork_mask);
 #endif
